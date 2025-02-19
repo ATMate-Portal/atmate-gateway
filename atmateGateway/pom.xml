@@ -10,9 +10,10 @@
     </parent>
     <groupId>com.atmate.portal.gateway</groupId>
     <artifactId>atmateGateway</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>atmateGateway</name>
     <description>atmateGateway</description>
+    <packaging>jar</packaging>
     <url/>
     <licenses>
         <license/>
@@ -27,7 +28,7 @@
         <url/>
     </scm>
     <properties>
-        <java.version>23</java.version>
+        <java.version>21</java.version>
     </properties>
     <dependencies>
         <dependency>
