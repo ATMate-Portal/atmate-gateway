@@ -8,6 +8,6 @@ public class TestController {
 
     @GetMapping("/test")
     public String test() {
-        return "A aplicação está a funcionar corretamente! Build Automático da API Gateway!";
+        return "A aplicação está a funcionar corretamente! Build Automático da API Gateway! Teste!";
     }
 }
