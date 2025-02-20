@@ -1,4 +1,4 @@
-package com.atmate.portal.integration.atmateintegration.controller;
+package com.atmate.portal.gateway.atmategateway.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
