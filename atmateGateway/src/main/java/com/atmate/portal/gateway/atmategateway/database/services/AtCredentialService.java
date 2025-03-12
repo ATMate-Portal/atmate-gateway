@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.repos.AtCredentialRepository;
+import com.atmate.portal.gateway.atmategateway.services.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ import java.util.Optional;
 public class AtCredentialService {
 
     private final AtCredentialRepository atCredentialRepository;
+    @Autowired
+    private CryptoService cryptoService;
+
 
     @Autowired
     public AtCredentialService(AtCredentialRepository atCredentialRepository) {
@@ -19,7 +23,12 @@ public class AtCredentialService {
     }
 
     // Criar uma nova credencial
-    public AtCredential createAtCredential(AtCredential atCredential) {
+    public AtCredential createAtCredential(AtCredential atCredential) throws Exception {
+
+        String unmaskedPassword = atCredential.getPassword(); //12345
+
+        atCredential.setPassword(cryptoService.encrypt(unmaskedPassword));
+
         return atCredentialRepository.save(atCredential);
     }
 
