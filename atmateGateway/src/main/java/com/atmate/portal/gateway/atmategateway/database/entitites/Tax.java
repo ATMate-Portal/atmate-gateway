@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.database.entitites;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,6 +20,10 @@ public class Tax {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
+    private Client client;
+
+    @ManyToOne
     @JoinColumn(name = "tax_type", nullable = false)
     private TaxType taxType;
 
@@ -30,6 +35,9 @@ public class Tax {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(name = "payment_deadline")
+    private LocalDate paymentDeadline;
 
     @PreUpdate
     public void preUpdate() {
