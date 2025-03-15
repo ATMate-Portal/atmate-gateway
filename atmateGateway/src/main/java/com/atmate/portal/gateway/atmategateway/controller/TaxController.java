@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "${cors.allowed.origin}") // Corrected line
+@CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/tax")
 public class TaxController {
 
