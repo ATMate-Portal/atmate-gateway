@@ -133,6 +133,9 @@ public class TaxService {
             responseDTO.getTaxes().sort(Comparator.comparingLong(UrgentTaxResponseDTO.TaxDetail::getDaysLeft));
         }
 
+        // Ordenar a lista de clientes por nextPaymentDate
+        result.sort(Comparator.comparing(UrgentTaxResponseDTO::getNextPaymentDate));
+        
         return new ArrayList<>(clientTaxesMap.values());
     }
 
