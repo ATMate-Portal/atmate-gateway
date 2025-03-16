@@ -136,7 +136,7 @@ public class TaxService {
         // Ordenar a lista de clientes por nextPaymentDate
         result.sort(Comparator.comparing(UrgentTaxResponseDTO::getNextPaymentDate));
         
-        return new ArrayList<>(clientTaxesMap.values());
+        return result;
     }
 
 
