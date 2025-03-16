@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -128,6 +125,12 @@ public class TaxService {
                             .taxes(new ArrayList<>())
                             .build()
             ).getTaxes().add(taxDetail);
+        }
+
+        // Ordenar cada lista de TaxDetail por daysLeft
+        List<UrgentTaxResponseDTO> result = new ArrayList<>(clientTaxesMap.values());
+        for (UrgentTaxResponseDTO responseDTO : result) {
+            responseDTO.getTaxes().sort(Comparator.comparingLong(UrgentTaxResponseDTO.TaxDetail::getDaysLeft));
         }
 
         return new ArrayList<>(clientTaxesMap.values());
