@@ -112,7 +112,7 @@ public class TaxService {
             UrgentTaxResponseDTO.TaxDetail taxDetail = UrgentTaxResponseDTO.TaxDetail.builder()
                     .taxId(tax.getId())
                     .taxData(tax.getTaxData())
-                    .type(tax.getTaxType().getId())
+                    .type(tax.getTaxType().getDescription())
                     .licensePlate(licensePlate)
                     .amount(amount)
                     .paymentDeadline(tax.getPaymentDeadline())

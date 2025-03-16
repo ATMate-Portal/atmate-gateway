@@ -24,7 +24,7 @@ public class UrgentTaxResponseDTO {
     public static class TaxDetail {
         private Integer taxId;
         private String taxData;
-        private Integer type;
+        private String type;
         private String licensePlate;
         private String amount;
         private LocalDate paymentDeadline;
