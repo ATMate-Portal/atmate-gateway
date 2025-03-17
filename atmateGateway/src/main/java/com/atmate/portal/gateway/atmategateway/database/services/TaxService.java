@@ -127,16 +127,32 @@ public class TaxService {
             ).getTaxes().add(taxDetail);
         }
 
-        // Ordenar cada lista de TaxDetail por daysLeft
+        // Criar lista a partir do mapa de clientes
         List<UrgentTaxResponseDTO> result = new ArrayList<>(clientTaxesMap.values());
+
+        // Definir corretamente o nextPaymentDate com base no imposto mais próximo
         for (UrgentTaxResponseDTO responseDTO : result) {
-            responseDTO.getTaxes().sort(Comparator.comparingLong(UrgentTaxResponseDTO.TaxDetail::getDaysLeft));
+            responseDTO.setNextPaymentDate(
+                    responseDTO.getTaxes().stream()
+                            .map(UrgentTaxResponseDTO.TaxDetail::getPaymentDeadline)
+                            .min(LocalDate::compareTo)
+                            .orElse(null)
+            );
         }
 
-        // Ordenar a lista de clientes por nextPaymentDate
-        result.sort(Comparator.comparing(UrgentTaxResponseDTO::getNextPaymentDate));
-        
+        // Ordenar impostos dentro de cada cliente por daysLeft
+        for (UrgentTaxResponseDTO responseDTO : result) {
+            responseDTO.getTaxes().sort(
+                    Comparator.comparing(UrgentTaxResponseDTO.TaxDetail::getDaysLeft)
+            );
+        }
+
+        // Ordenar clientes por nextPaymentDate e clientName
+        result.sort(Comparator.comparing(UrgentTaxResponseDTO::getNextPaymentDate)
+                .thenComparing(UrgentTaxResponseDTO::getClientName));
+
         return result;
+
     }
 
 
