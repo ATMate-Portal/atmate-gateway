@@ -24,16 +24,16 @@ jobs:
           java-version: '21'
           distribution: 'microsoft'
 
-      - name: Build with Maven
+      - name: Build with Maven (PRD Profile, Skip Tests)
         run: |
           cd atmateGateway
-          mvn clean install
+          mvn clean install -Dspring.profiles.active=prd -DskipTests
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: '${{ github.workspace }}/atmateGateway/target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
