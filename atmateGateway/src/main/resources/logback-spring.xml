@@ -35,7 +35,7 @@
 
         <!-- File Appender -->
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>C:\ProgramData\Jenkins\.jenkins\workspace\ATMate\resources\log\gateway-api.log</file>
+            <file>/home/LogFiles/gateway-api.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <fileNamePattern>logs/application-%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>7</maxHistory>
