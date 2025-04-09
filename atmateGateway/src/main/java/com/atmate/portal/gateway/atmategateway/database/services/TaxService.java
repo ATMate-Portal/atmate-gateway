@@ -76,7 +76,6 @@ public class TaxService {
             log.info("getUrgentTaxes() returning empty list");
             return new ArrayList<>(clientTaxesMap.values());
         }
-
         for (Tax tax : taxes) {
             if (tax.getClient() == null) {
                 throw new ATMateException(ErrorEnum.INVALID_TAX_CLIENT);
@@ -95,9 +94,15 @@ public class TaxService {
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(tax.getTaxData());
-                licensePlate = jsonNode.path("Matrícula").asText();
-                amount = jsonNode.path("Valor Base").asText();
+                if(tax.getTaxType().getId() == 1){ //IUC
+                    licensePlate = jsonNode.path("Matrícula").asText();
+                    amount = jsonNode.path("Valor Base").asText();
 
+                } else if(tax.getTaxType().getId() == 5) { //IMI
+                    licensePlate = "IMI";
+                    amount = jsonNode.path("Valor").asText();
+                }
+                
                 if (licensePlate == null || amount == null) {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
