@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.TaxResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UrgentTaxResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.repos.TaxRepository;
@@ -64,6 +65,81 @@ public class TaxService {
         taxRepository.deleteById(id);
     }
 
+    public List<TaxResponseDTO> getTaxes(){
+
+        List<TaxResponseDTO> taxList = new ArrayList<>();
+
+        List<Tax> taxes = taxRepository.findAll();
+
+        for (Tax tax : taxes) {
+            if (tax.getClient() == null) {
+                throw new ATMateException(ErrorEnum.INVALID_TAX_CLIENT);
+            }
+
+            if (tax.getPaymentDeadline() == null) {
+                throw new ATMateException(ErrorEnum.INVALID_TAX_DEADLINE_DATE);
+            }
+
+            if (tax.getTaxData() == null || tax.getTaxData().isBlank()) {
+                throw new ATMateException(ErrorEnum.INVALID_TAX_DATA);
+            }
+
+            String identifier = null;
+            String amount = null;
+            String state = null;
+
+            try {
+                JsonNode jsonNode = objectMapper.readTree(tax.getTaxData());
+                if(tax.getTaxType().getId() == 1){ //IUC
+                    identifier = jsonNode.path("Matrícula").asText();
+                    amount = jsonNode.path("Valor Base").asText();
+                    state = jsonNode.path("Situação da Nota").asText();
+
+                } else if(tax.getTaxType().getId() == 5) { //IMI
+                    identifier = jsonNode.path("Nº Nota Cob.").asText();
+                    amount = jsonNode.path("Valor").asText();
+                    state = jsonNode.path("Situação").asText();
+                }
+
+                if (identifier == null || amount == null) {
+                    throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
+                }
+            } catch (JsonProcessingException e) {
+                throw new ATMateException(ErrorEnum.INVALID_JSON);
+            }
+
+            TaxResponseDTO taxResponse = new TaxResponseDTO();
+            taxResponse.setIdentificadorUnico(identifier);
+            taxResponse.setTipo(tax.getTaxType().getDescription());
+            taxResponse.setPeriodo("Teste");
+            taxResponse.setDataLimite(tax.getPaymentDeadline());
+
+            if(state.equals("-")){
+                state = "Pendente";
+            }
+
+            if(state.contains("Paga")){
+                state = "Pago";
+            }
+
+            if(state.contains("Anulada")){
+                state = "Anulada";
+            }
+
+            if(amount.contains("EUR")){
+                amount = amount.replace("EUR", "");
+            }
+
+            taxResponse.setValor(amount.trim() + " €");
+            taxResponse.setEstado(state);
+            taxResponse.setClientName(tax.getClient().getName());
+
+            taxList.add(taxResponse);
+        }
+
+        return taxList;
+    }
+
     public List<UrgentTaxResponseDTO> getUrgentTaxes(int days) {
         log.info("getUrgentTaxes() Called");
         LocalDate today = LocalDate.now();
@@ -89,21 +165,21 @@ public class TaxService {
                 throw new ATMateException(ErrorEnum.INVALID_TAX_DATA);
             }
 
-            String licensePlate = null;
+            String identifier = null;
             String amount = null;
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(tax.getTaxData());
                 if(tax.getTaxType().getId() == 1){ //IUC
-                    licensePlate = jsonNode.path("Matrícula").asText();
+                    identifier = jsonNode.path("Matrícula").asText();
                     amount = jsonNode.path("Valor Base").asText();
 
                 } else if(tax.getTaxType().getId() == 5) { //IMI
-                    licensePlate = "IMI";
+                    identifier = jsonNode.path("Nº Nota Cob.").asText();
                     amount = jsonNode.path("Valor").asText();
                 }
                 
-                if (licensePlate == null || amount == null) {
+                if (identifier == null || amount == null) {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
             } catch (JsonProcessingException e) {
@@ -115,7 +191,7 @@ public class TaxService {
                     .taxId(tax.getId())
                     .taxData(tax.getTaxData())
                     .type(tax.getTaxType().getDescription())
-                    .licensePlate(licensePlate)
+                    .licensePlate(identifier)
                     .amount(amount)
                     .paymentDeadline(tax.getPaymentDeadline())
                     .daysLeft(ChronoUnit.DAYS.between(LocalDate.now(), tax.getPaymentDeadline()))
@@ -159,6 +235,8 @@ public class TaxService {
         return result;
 
     }
+
+
 
 
 }

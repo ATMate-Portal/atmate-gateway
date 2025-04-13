@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.TaxResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UrgentTaxResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.services.TaxService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,11 @@ public class TaxController {
     @GetMapping("/getUrgentTaxes")
     public List<UrgentTaxResponseDTO> getUrgentTaxes(@RequestParam(value = "days", required = false) Integer days) {
         return taxService.getUrgentTaxes(days != null ? days : 14);
+    }
+
+    @GetMapping("/getTaxes")
+    public List<TaxResponseDTO> getTaxes() {
+        return taxService.getTaxes();
     }
 
 
