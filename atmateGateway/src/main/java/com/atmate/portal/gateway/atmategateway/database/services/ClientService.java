@@ -1,13 +1,8 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.ClientFilterDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.ClientResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientRepository;
-import com.atmate.portal.gateway.atmategateway.database.specification.ClientSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,23 +49,5 @@ public class ClientService {
             throw new RuntimeException("Cliente não encontrado com ID: " + id);
         }
         clientRepository.deleteById(id);
-    }
-
-    public Page<ClientResponseDTO> getClients(ClientFilterDTO filter, Pageable pageable) {
-        return clientRepository.findAll(ClientSpecification.withFilters(filter), pageable)
-                .map(this::toDTO);
-    }
-
-    private ClientResponseDTO toDTO(Client client) {
-        ClientResponseDTO dto = new ClientResponseDTO();
-        dto.setId(client.getId());
-        dto.setName(client.getName());
-        dto.setNif(client.getNif());
-        dto.setGender(client.getGender());
-        dto.setNationality(client.getNationality());
-        dto.setAssociatedColaborator(client.getAssociatedColaborator());
-        dto.setBirthDate(client.getBirthDate());
-        dto.setLastRefreshDate(client.getLastRefreshDate());
-        return dto;
     }
 }
