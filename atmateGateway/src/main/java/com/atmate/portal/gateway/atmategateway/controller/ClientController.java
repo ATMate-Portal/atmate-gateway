@@ -1,6 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientAtCredentialDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.ClientResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/clients")
@@ -39,6 +42,12 @@ public class ClientController {
         }
 
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/getClients")
+    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
+        List<ClientResponseDTO> clients = clientService.getClients();
+        return ResponseEntity.ok(clients);
     }
 }
 

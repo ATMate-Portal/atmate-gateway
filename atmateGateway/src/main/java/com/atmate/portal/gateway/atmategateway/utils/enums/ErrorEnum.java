@@ -16,6 +16,8 @@ public enum ErrorEnum {
     INVALID_TAX_DEADLINE_DATE("DATA-006", "Erro ao processar dados do imposto. Data Limite Pagamento inválida."),
     INVALID_TAX_CLIENT("DATA-007", "Erro ao processar dados do imposto. O cliente associado é inválido."),
 
+    CLIENT_NOT_FOUND("DATA-008", "Não foi encontrado nenhum imposto"),
+
     // Erros de autenticação (exemplo)
     AUTHENTICATION_FAILED("AUTH001", "Falha na autenticação."),
     UNAUTHORIZED("AUTH002", "Não autorizado."),
