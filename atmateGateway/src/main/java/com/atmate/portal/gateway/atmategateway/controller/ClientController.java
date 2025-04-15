@@ -30,34 +30,13 @@ public class ClientController {
     @Autowired
     IntegrationClient integrationClient;
 
-
-    @PostMapping("/create")
-    public ResponseEntity<Client> createUser(@RequestBody ClientAtCredentialDTO clientAtCredentialDTO) throws Exception {
-
-        Client client = clientService.createClient(clientAtCredentialDTO.getClient());
-
-        if (client != null) {
-            AtCredential atCredential = clientAtCredentialDTO.getAtCredential();
-            atCredential.setClient(client);
-
-            AtCredential newATCredential = atCredentialService.createAtCredential(atCredential);
-
-            if (newATCredential != null) {
-                return new ResponseEntity<>(client, HttpStatus.CREATED);
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @GetMapping("/getClients")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         List<ClientResponseDTO> clients = clientService.getClients();
         return ResponseEntity.ok(clients);
     }
-}
 
-    @PostMapping("/create2")
+    @PostMapping("/create")
     public ResponseEntity<Client> createUser2(@RequestBody ClientInputCreateDTO input) throws Exception {
         String nif = String.valueOf(input.getNif());
         //Check NIF
