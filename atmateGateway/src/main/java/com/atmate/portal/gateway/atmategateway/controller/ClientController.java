@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientAtCredentialDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientInputCreateDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.ClientResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientType;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/clients")
@@ -46,6 +49,13 @@ public class ClientController {
 
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @GetMapping("/getClients")
+    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
+        List<ClientResponseDTO> clients = clientService.getClients();
+        return ResponseEntity.ok(clients);
+    }
+}
 
     @PostMapping("/create2")
     public ResponseEntity<Client> createUser2(@RequestBody ClientInputCreateDTO input) throws Exception {

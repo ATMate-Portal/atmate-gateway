@@ -28,6 +28,9 @@ public enum ErrorEnum {
     CLIENT_SAVE_ERROR("CLIENT-002", "Erro ao guardar cliente."),
 
     // AUTH ERROS
+    CLIENT_NOT_FOUND("DATA-008", "Não foi encontrado nenhum imposto"),
+
+    // Erros de autenticação (exemplo)
     AUTHENTICATION_FAILED("AUTH001", "Falha na autenticação."),
     UNAUTHORIZED("AUTH002", "Não autorizado."),
 
