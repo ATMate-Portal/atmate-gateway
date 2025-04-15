@@ -37,6 +37,10 @@ public class ClientService {
         return clientRepository.findById(id);
     }
 
+    public boolean existsByNif(Integer nif) {
+        return clientRepository.existsByNif(nif);
+    }
+
     // Atualizar um cliente
     public Client updateClient(Integer id, Client clientDetails) {
         Client client = clientRepository.findById(id)

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorEnum {
 
-    // Erros comuns (exemplo)
+    // Errors DATA
     TAX_NOT_FOUND("DATA-001", "Não foi encontrado nenhum imposto"),
     DATABASE_ERROR("DATA-002", "Erro ao aceder a base de dados"),
     INVALID_JSON("DATA-003", "Erro ao processar dados do imposto. Estrutura inválida."),
@@ -16,6 +16,18 @@ public enum ErrorEnum {
     INVALID_TAX_DEADLINE_DATE("DATA-006", "Erro ao processar dados do imposto. Data Limite Pagamento inválida."),
     INVALID_TAX_CLIENT("DATA-007", "Erro ao processar dados do imposto. O cliente associado é inválido."),
 
+    //INVALID DATA
+    INVALID_NIF("INVALID-001", "NIF inválido. Deve conter exatamente 9 dígitos."),
+    INVALID_PASSWORD("INVALID-002", "Password inválida. Deve ter pelo menos 6 caracteres."),
+
+    //CREDENTIALS ERRORS
+    CREDENTIAL_ERROR("CRED-001", "Erro ao guardar credenciais."),
+
+    //CLIENT ERRORS
+    CLIENT_ALREADY_EXISTS("CLIENT-001", "Já existe um cliente com este NIF."),
+    CLIENT_SAVE_ERROR("CLIENT-002", "Erro ao guardar cliente."),
+
+    // AUTH ERROS
     CLIENT_NOT_FOUND("DATA-008", "Não foi encontrado nenhum imposto"),
 
     // Erros de autenticação (exemplo)
