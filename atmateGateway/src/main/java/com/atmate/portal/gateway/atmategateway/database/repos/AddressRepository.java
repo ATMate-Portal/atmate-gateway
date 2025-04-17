@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
 
+    boolean deleteAddressByClientId(int id);
+
+    boolean existsAddressByClientId(int id);
+
 }

@@ -44,12 +44,12 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    // Deletar um endereço
-    public void deleteAddress(Integer id) {
-        if (!addressRepository.existsById(id)) {
+    public void deleteAddressByClientId(Integer id) {
+        if (!addressRepository.existsAddressByClientId(id)) {
             throw new RuntimeException("Endereço não encontrado com ID: " + id);
         }
-        addressRepository.deleteById(id);
+
+        addressRepository.deleteAddressByClientId(id);
     }
 }
 

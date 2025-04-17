@@ -7,5 +7,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
     // Você pode adicionar métodos personalizados aqui, se necessário
+
+    boolean deleteContactByClientId(int id);
+
+    boolean existsContactByClientId(int id);
+
 }
 

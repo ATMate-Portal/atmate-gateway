@@ -44,10 +44,11 @@ public class ContactService {
     }
 
     // Deletar um contato
-    public void deleteContact(Integer id) {
-        if (!contactRepository.existsById(id)) {
-            throw new RuntimeException("Contato não encontrado com ID: " + id);
+    public void deleteContactByClientId(Integer id) {
+        if (!contactRepository.existsContactByClientId(id)) {
+            throw new RuntimeException("Endereço não encontrado com ID: " + id);
         }
-        contactRepository.deleteById(id);
+
+        contactRepository.deleteContactByClientId(id);
     }
 }

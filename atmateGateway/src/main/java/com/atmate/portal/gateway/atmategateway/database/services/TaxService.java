@@ -236,6 +236,14 @@ public class TaxService {
 
     }
 
+    public void deleteTaxByClientId(Integer id) {
+        if (!taxRepository.existsTaxByClientId(id)) {
+            throw new RuntimeException("Endereço não encontrado com ID: " + id);
+        }
+
+        taxRepository.deleteTaxByClientId(id);
+    }
+
 
 
 

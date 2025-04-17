@@ -14,5 +14,9 @@ public interface TaxRepository extends JpaRepository<Tax, Integer> {
     @Query("SELECT t FROM Tax t WHERE t.paymentDeadline BETWEEN :today AND :futureDate")
     List<Tax> findUrgentTaxes(@Param("today") LocalDate today, @Param("futureDate") LocalDate futureDate);
 
+    boolean deleteTaxByClientId(int id);
+
+    boolean existsTaxByClientId(int id);
+
 }
 

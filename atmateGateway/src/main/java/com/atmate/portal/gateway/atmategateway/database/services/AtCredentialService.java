@@ -53,10 +53,11 @@ public class AtCredentialService {
     }
 
     // Deletar uma credencial
-    public void deleteAtCredential(Integer id) {
-        if (!atCredentialRepository.existsById(id)) {
-            throw new RuntimeException("Credencial não encontrada com ID: " + id);
+    public void deleteATCredentialByClientId(Integer id) {
+        if (!atCredentialRepository.existsAtCredentialsByClientId(id)) {
+            throw new RuntimeException("Endereço não encontrado com ID: " + id);
         }
-        atCredentialRepository.deleteById(id);
+
+        atCredentialRepository.deleteAtCredentialByClientId(id);
     }
 }

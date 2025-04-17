@@ -8,4 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AtCredentialRepository extends JpaRepository<AtCredential, Integer> {
     // Você pode adicionar métodos personalizados aqui, se necessário
+
+    boolean deleteAtCredentialByClientId(int id);
+
+    boolean existsAtCredentialsByClientId(int id);
+
 }
