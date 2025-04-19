@@ -142,20 +142,20 @@ public class ConfigurationController {
         configurationService.getConfigurationString(urgentDaysVarName)
                 .ifPresent(config -> {
                     log.debug("Found {}: {}", urgentDaysVarName, config.getVarvalue());
-                    params.setUrgentDays(config.getVarvalue());
+                    params.setUrgencyDays(config.getVarvalue());
                 });
 
         if (params.getWarningDays() == null) {
             log.warn("No configuration found for {}", warningDaysVarName);
             params.setWarningDays("7"); // Default value
         }
-        if (params.getUrgentDays() == null) {
+        if (params.getUrgencyDays() == null) {
             log.warn("No configuration found for {}", urgentDaysVarName);
-            params.setUrgentDays("2"); // Default value
+            params.setUrgencyDays("2"); // Default value
         }
 
         log.info("Returning ParamsDTO: warningDays={}, urgentDays={}",
-                params.getWarningDays(), params.getUrgentDays());
+                params.getWarningDays(), params.getUrgencyDays());
         return ResponseEntity.ok(params);
     }
 }
