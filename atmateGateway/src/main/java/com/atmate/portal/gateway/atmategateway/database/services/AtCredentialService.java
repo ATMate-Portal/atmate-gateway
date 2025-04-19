@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.repos.AtCredentialRepository;
 import com.atmate.portal.gateway.atmategateway.services.CryptoService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,10 +53,11 @@ public class AtCredentialService {
         return atCredentialRepository.save(atCredential);
     }
 
+    @Transactional
     // Deletar uma credencial
     public void deleteATCredentialByClientId(Integer id) {
         if (!atCredentialRepository.existsAtCredentialsByClientId(id)) {
-            throw new RuntimeException("Endereço não encontrado com ID: " + id);
+            System.out.println("Credenciais não encontradas com ID: " + id);
         }
 
         atCredentialRepository.deleteAtCredentialByClientId(id);

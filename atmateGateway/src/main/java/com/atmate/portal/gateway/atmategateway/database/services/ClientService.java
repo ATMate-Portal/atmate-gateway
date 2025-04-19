@@ -57,8 +57,6 @@ public class ClientService {
             throw new RuntimeException("Cliente não encontrado com ID: " + id);
         }
 
-
-
         clientRepository.deleteById(id);
     }
 

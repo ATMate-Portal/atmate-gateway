@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
 import com.atmate.portal.gateway.atmategateway.database.repos.AddressRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +45,10 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
+    @Transactional
     public void deleteAddressByClientId(Integer id) {
         if (!addressRepository.existsAddressByClientId(id)) {
-            throw new RuntimeException("Endereço não encontrado com ID: " + id);
+            System.out.println("Endereço não encontrado com ID: " + id);
         }
 
         addressRepository.deleteAddressByClientId(id);

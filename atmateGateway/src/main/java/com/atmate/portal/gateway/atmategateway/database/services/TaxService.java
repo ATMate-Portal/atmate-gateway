@@ -9,6 +9,7 @@ import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -236,9 +237,10 @@ public class TaxService {
 
     }
 
+    @Transactional
     public void deleteTaxByClientId(Integer id) {
         if (!taxRepository.existsTaxByClientId(id)) {
-            throw new RuntimeException("Endereço não encontrado com ID: " + id);
+            System.out.println("Taxa não encontrada com o ID: " + id);
         }
 
         taxRepository.deleteTaxByClientId(id);

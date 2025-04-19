@@ -94,13 +94,13 @@ public class ClientController {
             //delete credentials
             atCredentialService.deleteATCredentialByClientId(id);
             //delete contacts
-            atCredentialService.deleteATCredentialByClientId(id);
+            contactService.deleteContactByClientId(id);
             //delete tax information
             taxService.deleteTaxByClientId(id);
             //delete clientNotifications
 
             clientService.deleteClient(id);
-            return new ResponseEntity<>("Cliente com o ID: " + id + " eliminado com sucesso.", HttpStatus.OK);
+            return new ResponseEntity<>("Cliente com eliminado com sucesso.", HttpStatus.OK);
         } catch (Exception e) {
             // Log do erro para debugging
             e.printStackTrace();

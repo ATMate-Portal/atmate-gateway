@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.Contact;
 import com.atmate.portal.gateway.atmategateway.database.repos.ContactRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +44,11 @@ public class ContactService {
         return contactRepository.save(contact);
     }
 
+    @Transactional
     // Deletar um contato
     public void deleteContactByClientId(Integer id) {
         if (!contactRepository.existsContactByClientId(id)) {
-            throw new RuntimeException("Endereço não encontrado com ID: " + id);
+            System.out.println("Contactos não encontrados com ID: " + id);
         }
 
         contactRepository.deleteContactByClientId(id);
