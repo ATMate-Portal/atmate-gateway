@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Validated
@@ -34,47 +37,89 @@ public class ConfigurationController {
         log.info("Received request to set parameters: warningDays={}, urgentDays={}",
                 paramsDTO.getWarningDays(), paramsDTO.getUrgentDays());
 
-        // Validate input
         try {
-            int warningDays = Integer.parseInt(paramsDTO.getWarningDays());
-            int urgentDays = Integer.parseInt(paramsDTO.getUrgentDays());
+            Integer warningDays = null;
+            Integer urgentDays = null;
+            List<Configuration> configsToUpdate = new ArrayList<>();
 
-            if (warningDays <= 0) {
-                log.warn("Invalid warningDays: {} must be positive", warningDays);
-                return ResponseEntity.badRequest().body("Warning days must be positive");
+            // Parse and validate warningDays if provided
+            if (paramsDTO.getWarningDays() != null && !paramsDTO.getWarningDays().trim().isEmpty()) {
+                try {
+                    warningDays = Integer.parseInt(paramsDTO.getWarningDays());
+                    if (warningDays <= 0) {
+                        log.warn("Invalid warningDays: {} must be positive", warningDays);
+                        return ResponseEntity.badRequest().body("Warning days must be positive");
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Invalid warningDays format: {}", paramsDTO.getWarningDays());
+                    return ResponseEntity.badRequest().body("Warning days must be a valid number");
+                }
             }
-            if (urgentDays <= 0) {
-                log.warn("Invalid urgentDays: {} must be positive", urgentDays);
-                return ResponseEntity.badRequest().body("Urgent days must be positive");
+
+            // Parse and validate urgentDays if provided
+            if (paramsDTO.getUrgentDays() != null && !paramsDTO.getUrgentDays().trim().isEmpty()) {
+                try {
+                    urgentDays = Integer.parseInt(paramsDTO.getUrgentDays());
+                    if (urgentDays <= 0) {
+                        log.warn("Invalid urgentDays: {} must be positive", urgentDays);
+                        return ResponseEntity.badRequest().body("Urgent days must be positive");
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Invalid urgentDays format: {}", paramsDTO.getUrgentDays());
+                    return ResponseEntity.badRequest().body("Urgent days must be a valid number");
+                }
             }
-            if (urgentDays > warningDays) {
-                log.warn("Invalid input: urgentDays={} must be less than or equal to warningDays={}",
-                        urgentDays, warningDays);
-                return ResponseEntity.badRequest().body("Urgent days must be less than or equal to warning days");
+
+            // Enforce urgentDays <= warningDays when both are provided or when one depends on the other
+            if (warningDays != null || urgentDays != null) {
+                // Fetch current configurations if needed
+                Optional<Configuration> currentWarningConfig = configurationService.getConfigurationString(warningDaysVarName);
+                Optional<Configuration> currentUrgentConfig = configurationService.getConfigurationString(urgentDaysVarName);
+
+                int currentWarningDays = currentWarningConfig.map(config -> Integer.parseInt(config.getVarvalue())).orElse(7);
+                int currentUrgentDays = currentUrgentConfig.map(config -> Integer.parseInt(config.getVarvalue())).orElse(2);
+
+                int effectiveWarningDays = warningDays != null ? warningDays : currentWarningDays;
+                int effectiveUrgentDays = urgentDays != null ? urgentDays : currentUrgentDays;
+
+                if (effectiveUrgentDays > effectiveWarningDays) {
+                    log.warn("Invalid input: urgentDays={} must be less than or equal to warningDays={}",
+                            effectiveUrgentDays, effectiveWarningDays);
+                    return ResponseEntity.badRequest().body("Urgent days must be less than or equal to warning days");
+                }
+
+                // Prepare configurations to update
+                if (warningDays != null) {
+                    Configuration warningConfig = new Configuration();
+                    warningConfig.setVarname(warningDaysVarName);
+                    warningConfig.setVarvalue(String.valueOf(warningDays));
+                    warningConfig.setDescription("Number of days for warning notification");
+                    warningConfig.setIsActive(true);
+                    configsToUpdate.add(warningConfig);
+                }
+
+                if (urgentDays != null) {
+                    Configuration urgentConfig = new Configuration();
+                    urgentConfig.setVarname(urgentDaysVarName);
+                    urgentConfig.setVarvalue(String.valueOf(urgentDays));
+                    urgentConfig.setDescription("Number of days for urgent notification");
+                    urgentConfig.setIsActive(true);
+                    configsToUpdate.add(urgentConfig);
+                }
             }
 
-            // Update configurations
-            Configuration warningConfig = new Configuration();
-            warningConfig.setVarname(warningDaysVarName);
-            warningConfig.setVarvalue(String.valueOf(warningDays));
-            warningConfig.setDescription("Number of days for warning notification");
-            warningConfig.setIsActive(true);
-
-            Configuration urgentConfig = new Configuration();
-            urgentConfig.setVarname(urgentDaysVarName);
-            urgentConfig.setVarvalue(String.valueOf(urgentDays));
-            urgentConfig.setDescription("Number of days for urgent notification");
-            urgentConfig.setIsActive(true);
-
-            configurationService.saveConfigurations(Arrays.asList(warningConfig, urgentConfig));
-            log.info("Successfully updated configurations: warningDays={}, urgentDays={}",
-                    warningDays, urgentDays);
+            // Save configurations if there are any to update
+            if (!configsToUpdate.isEmpty()) {
+                configurationService.saveConfigurations(configsToUpdate);
+                log.info("Successfully updated configurations: warningDays={}, urgentDays={}",
+                        warningDays != null ? warningDays : "unchanged",
+                        urgentDays != null ? urgentDays : "unchanged");
+            } else {
+                log.info("No parameters provided to update");
+                return ResponseEntity.ok("No parameters updated");
+            }
 
             return ResponseEntity.ok("Parameters updated successfully");
-        } catch (NumberFormatException e) {
-            log.warn("Invalid input format: warningDays={}, urgentDays={}",
-                    paramsDTO.getWarningDays(), paramsDTO.getUrgentDays());
-            return ResponseEntity.badRequest().body("Warning days and urgent days must be valid numbers");
         } catch (Exception e) {
             log.error("Failed to update parameters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
