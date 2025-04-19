@@ -100,7 +100,7 @@ public class ClientController {
             //delete clientNotifications
 
             clientService.deleteClient(id);
-            return new ResponseEntity<>("Cliente com eliminado com sucesso.", HttpStatus.OK);
+            return new ResponseEntity<>("Cliente eliminado com sucesso.", HttpStatus.OK);
         } catch (Exception e) {
             // Log do erro para debugging
             e.printStackTrace();
