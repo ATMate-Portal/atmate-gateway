@@ -35,7 +35,7 @@ public class ConfigurationController {
     @PostMapping("/setParams")
     public ResponseEntity<String> setParams(@Valid @RequestBody ParamsDTO paramsDTO) {
         log.info("Received request to set parameters: warningDays={}, urgentDays={}",
-                paramsDTO.getWarningDays(), paramsDTO.getUrgentDays());
+                paramsDTO.getWarningDays(), paramsDTO.getUrgencyDays());
 
         try {
             Integer warningDays = null;
@@ -57,15 +57,15 @@ public class ConfigurationController {
             }
 
             // Parse and validate urgentDays if provided
-            if (paramsDTO.getUrgentDays() != null && !paramsDTO.getUrgentDays().trim().isEmpty()) {
+            if (paramsDTO.getUrgencyDays() != null && !paramsDTO.getUrgencyDays().trim().isEmpty()) {
                 try {
-                    urgentDays = Integer.parseInt(paramsDTO.getUrgentDays());
+                    urgentDays = Integer.parseInt(paramsDTO.getUrgencyDays());
                     if (urgentDays <= 0) {
                         log.warn("Invalid urgentDays: {} must be positive", urgentDays);
                         return ResponseEntity.badRequest().body("Urgent days must be positive");
                     }
                 } catch (NumberFormatException e) {
-                    log.warn("Invalid urgentDays format: {}", paramsDTO.getUrgentDays());
+                    log.warn("Invalid urgentDays format: {}", paramsDTO.getUrgencyDays());
                     return ResponseEntity.badRequest().body("Urgent days must be a valid number");
                 }
             }

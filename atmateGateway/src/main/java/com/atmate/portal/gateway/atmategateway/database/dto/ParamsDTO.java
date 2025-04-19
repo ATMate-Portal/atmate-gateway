@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ParamsDTO {
     private String warningDays;
-    private String urgentDays;
+    private String urgencyDays;
 }
