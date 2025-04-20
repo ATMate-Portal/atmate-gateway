@@ -134,6 +134,7 @@ public class TaxService {
             taxResponse.setValor(amount.trim() + " €");
             taxResponse.setEstado(state);
             taxResponse.setClientName(tax.getClient().getName());
+            taxResponse.setJson(tax.getTaxData());
 
             taxList.add(taxResponse);
         }

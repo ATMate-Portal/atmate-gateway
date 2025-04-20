@@ -19,5 +19,6 @@ public class TaxResponseDTO {
     String clientName;
     String valor;
     String estado;
+    String json;
 
 }
