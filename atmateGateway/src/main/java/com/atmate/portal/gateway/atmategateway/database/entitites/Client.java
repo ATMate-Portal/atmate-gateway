@@ -64,11 +64,11 @@ public class Client {
     }
 
     public String getGender() {
-        return switch (gender) {
+        return gender != null ? switch (gender) {
             case "M" -> "Masculino";
             case "F" -> "Feminino";
             default -> "Outro";
-        };
+        } : "Outro";
     }
 
     public String getAssociatedColaborator(){

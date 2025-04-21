@@ -73,6 +73,7 @@ public class ClientService {
         }
 
         for (Client client : clients) {
+
             ClientResponseDTO dto = new ClientResponseDTO(
                     client.getId(),
                     client.getName(),
