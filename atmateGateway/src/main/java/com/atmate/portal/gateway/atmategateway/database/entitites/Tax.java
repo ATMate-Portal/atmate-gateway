@@ -65,7 +65,7 @@ public class Tax {
     public String getIdentifier(JsonNode jsonNode) {
         return switch (taxType.getId()) {
             case 1 -> jsonNode.path("Matrícula").asText(); //IUC
-            case 2 -> jsonNode.path("Nº Nota Cob.").asText(); //IMI
+            case 5 -> jsonNode.path("Nº Nota Cob.").asText(); //IMI
             default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
         };
     }
@@ -76,12 +76,12 @@ public class Tax {
 
         switch (taxType.getId()) {
             case 1 -> amount = jsonNode.path("Valor Base").asText(); //IUC
-            case 2 -> amount = jsonNode.path("Valor").asText(); //IMI
+            case 5 -> amount = jsonNode.path("Valor").asText(); //IMI
             default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
         }
 
         if(amount.contains("EUR")){
-            amount = amount.replace("EUR",  "") + " €";
+            amount = amount.replace("EUR",  "") + "€";
         }
 
         return amount;
@@ -93,7 +93,7 @@ public class Tax {
 
         switch (taxType.getId()) {
             case 1 -> state = jsonNode.path("Situação da Nota").asText(); //IUC
-            case 2 -> state = jsonNode.path("Situação").asText(); //IMI
+            case 5 -> state = jsonNode.path("Situação").asText(); //IMI
             default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
         }
 
