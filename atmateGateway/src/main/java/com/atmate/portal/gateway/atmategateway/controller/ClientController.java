@@ -46,7 +46,7 @@ public class ClientController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Client> createUser2(@RequestBody ClientInputCreateDTO input) throws Exception {
+    public ResponseEntity<Client> createUser(@RequestBody ClientInputCreateDTO input) throws Exception {
         String nif = String.valueOf(input.getNif());
 
         //Check NIF

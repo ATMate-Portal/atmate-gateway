@@ -78,5 +78,6 @@ public class Client {
     public Client(Integer nif, ClientType clientType){
         this.nif = nif;
         this.name = "A obter dados de novo cliente...";
+        this.clientType = clientType;
     }
 }
