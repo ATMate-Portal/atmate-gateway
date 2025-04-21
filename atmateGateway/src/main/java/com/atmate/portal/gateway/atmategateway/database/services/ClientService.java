@@ -5,6 +5,7 @@ import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientRepository;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ClientService {
 
     private final ClientRepository clientRepository;
@@ -64,27 +66,29 @@ public class ClientService {
         List<ClientResponseDTO> clientList = new ArrayList<>();
 
         List<Client> clients = clientRepository.findAll();
-
-        if (clients == null || clients.isEmpty()) {
+        
+        if (clients.isEmpty()) {
+            log.warn("Não foram encontrados clientes. Necessário consultar BD");
             throw new ATMateException(ErrorEnum.CLIENT_NOT_FOUND);
         }
 
         for (Client client : clients) {
-            ClientResponseDTO dto = new ClientResponseDTO();
+            ClientResponseDTO dto = new ClientResponseDTO(
+                    client.getId(),
+                    client.getName(),
+                    client.getNif(),
+                    client.getGender(),
+                    client.getNationality(),
+                    client.getAssociatedColaborator(),
+                    client.getBirthDate(),
+                    client.getLastRefreshDate());
 
-            dto.setId(client.getId());
-            dto.setName(client.getName());
-            dto.setNif(client.getNif());
-            dto.setGender(client.getGender() != null ? client.getGender().toUpperCase() : "N/A");
-            dto.setNationality(client.getNationality() != null ? client.getNationality() : "Desconhecida");
-            dto.setAssociatedColaborator(
-                    client.getAssociatedColaborator() != null ? client.getAssociatedColaborator() : "Não associado"
-            );
-            dto.setBirthDate(client.getBirthDate());
-            dto.setLastRefreshDate(client.getLastRefreshDate());
+            log.info("Cliente: " + client.getName() + " com o NIF: " + client.getNif() + " a ser retornado da BD");
 
             clientList.add(dto);
         }
+
+        log.info("Número de clientes retornados: " + clients.size());
 
         return clientList;
     }

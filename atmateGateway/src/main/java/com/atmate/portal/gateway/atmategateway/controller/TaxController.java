@@ -17,8 +17,8 @@ public class TaxController {
     TaxService taxService;
 
     @GetMapping("/getUrgentTaxes")
-    public List<UrgentTaxResponseDTO> getUrgentTaxes(@RequestParam(value = "days", required = false) Integer days) {
-        return taxService.getUrgentTaxes(days != null ? days : 14);
+    public List<UrgentTaxResponseDTO> getUrgentTaxes(@RequestParam Integer days) {
+        return taxService.getUrgentTaxes(days);
     }
 
     @GetMapping("/getTaxes")

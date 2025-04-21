@@ -60,4 +60,27 @@ public class Client {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public String getGender() {
+        return switch (gender) {
+            case "M" -> "Masculino";
+            case "F" -> "Feminino";
+            default -> "Outro";
+        };
+    }
+
+    public String getAssociatedColaborator(){
+        return associatedColaborator != null ? associatedColaborator : "Não associado";
+    }
+
+    public Client(Integer nif){
+        this.nif = nif;
+        this.name = "A obter dados de novo cliente...";
+        //TODO: Decidir corretamente o tipo de type para cada cliente
+        /**
+         * NIF?
+         * AT?
+         */
+        this.clientType = new ClientType(4, null, null, null);
+    }
 }

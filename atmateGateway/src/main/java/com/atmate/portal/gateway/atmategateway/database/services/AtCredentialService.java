@@ -26,7 +26,7 @@ public class AtCredentialService {
     // Criar uma nova credencial
     public AtCredential createAtCredential(AtCredential atCredential) throws Exception {
 
-        String unmaskedPassword = atCredential.getPassword(); //12345
+        String unmaskedPassword = atCredential.getPassword();
 
         atCredential.setPassword(cryptoService.encrypt(unmaskedPassword));
 

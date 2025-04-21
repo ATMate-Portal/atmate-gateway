@@ -69,74 +69,38 @@ public class TaxService {
     public List<TaxResponseDTO> getTaxes(){
 
         List<TaxResponseDTO> taxList = new ArrayList<>();
-
         List<Tax> taxes = taxRepository.findAll();
 
         for (Tax tax : taxes) {
-            if (tax.getClient() == null) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_CLIENT);
-            }
-
-            if (tax.getPaymentDeadline() == null) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_DEADLINE_DATE);
-            }
-
-            if (tax.getTaxData() == null || tax.getTaxData().isBlank()) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_DATA);
-            }
-
-            String identifier = null;
-            String amount = null;
-            String state = null;
+            tax.validateData();
 
             try {
+
                 JsonNode jsonNode = objectMapper.readTree(tax.getTaxData());
-                if(tax.getTaxType().getId() == 1){ //IUC
-                    identifier = jsonNode.path("Matrícula").asText();
-                    amount = jsonNode.path("Valor Base").asText();
-                    state = jsonNode.path("Situação da Nota").asText();
 
-                } else if(tax.getTaxType().getId() == 5) { //IMI
-                    identifier = jsonNode.path("Nº Nota Cob.").asText();
-                    amount = jsonNode.path("Valor").asText();
-                    state = jsonNode.path("Situação").asText();
-                }
+                String identifier = tax.getIdentifier(jsonNode);
+                String amount = tax.getAmount(jsonNode);
+                String state = tax.getState(jsonNode);
 
-                if (identifier == null || amount == null) {
+                if (identifier == null || amount == null || state == null) {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
+
+                TaxResponseDTO taxResponse = new TaxResponseDTO();
+                taxResponse.setIdentificadorUnico(identifier);
+                taxResponse.setTipo(tax.getTaxType().getDescription());
+                taxResponse.setDataLimite(tax.getPaymentDeadline());
+
+                taxResponse.setValor(amount.trim());
+                taxResponse.setEstado(state);
+                taxResponse.setClientName(tax.getClient().getName());
+                taxResponse.setJson(tax.getTaxData());
+
+                taxList.add(taxResponse);
             } catch (JsonProcessingException e) {
                 throw new ATMateException(ErrorEnum.INVALID_JSON);
             }
 
-            TaxResponseDTO taxResponse = new TaxResponseDTO();
-            taxResponse.setIdentificadorUnico(identifier);
-            taxResponse.setTipo(tax.getTaxType().getDescription());
-            taxResponse.setPeriodo("Teste");
-            taxResponse.setDataLimite(tax.getPaymentDeadline());
-
-            if(state.equals("-")){
-                state = "Pendente";
-            }
-
-            if(state.contains("Paga")){
-                state = "Pago";
-            }
-
-            if(state.contains("Anulada")){
-                state = "Anulada";
-            }
-
-            if(amount.contains("EUR")){
-                amount = amount.replace("EUR", "");
-            }
-
-            taxResponse.setValor(amount.trim() + " €");
-            taxResponse.setEstado(state);
-            taxResponse.setClientName(tax.getClient().getName());
-            taxResponse.setJson(tax.getTaxData());
-
-            taxList.add(taxResponse);
         }
 
         return taxList;
@@ -154,60 +118,44 @@ public class TaxService {
             log.info("getUrgentTaxes() returning empty list");
             return new ArrayList<>(clientTaxesMap.values());
         }
+
         for (Tax tax : taxes) {
-            if (tax.getClient() == null) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_CLIENT);
-            }
-
-            if (tax.getPaymentDeadline() == null) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_DEADLINE_DATE);
-            }
-
-            if (tax.getTaxData() == null || tax.getTaxData().isBlank()) {
-                throw new ATMateException(ErrorEnum.INVALID_TAX_DATA);
-            }
-
-            String identifier = null;
-            String amount = null;
+            tax.validateData();
 
             try {
                 JsonNode jsonNode = objectMapper.readTree(tax.getTaxData());
-                if(tax.getTaxType().getId() == 1){ //IUC
-                    identifier = jsonNode.path("Matrícula").asText();
-                    amount = jsonNode.path("Valor Base").asText();
 
-                } else if(tax.getTaxType().getId() == 5) { //IMI
-                    identifier = jsonNode.path("Nº Nota Cob.").asText();
-                    amount = jsonNode.path("Valor").asText();
-                }
-                
+                String identifier = tax.getIdentifier(jsonNode);
+                String amount = tax.getAmount(jsonNode);
+
                 if (identifier == null || amount == null) {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
+
+                // Criar um objeto do imposto individual
+                UrgentTaxResponseDTO.TaxDetail taxDetail = UrgentTaxResponseDTO.TaxDetail.builder()
+                        .taxId(tax.getId())
+                        .taxData(tax.getTaxData())
+                        .type(tax.getTaxType().getDescription())
+                        .licensePlate(identifier)
+                        .amount(amount)
+                        .paymentDeadline(tax.getPaymentDeadline())
+                        .daysLeft(ChronoUnit.DAYS.between(LocalDate.now(), tax.getPaymentDeadline()))
+                        .build();
+
+                // Verificar se o cliente já está no mapa
+                clientTaxesMap.computeIfAbsent(tax.getClient().getId(), clientId ->
+                        UrgentTaxResponseDTO.builder()
+                                .clientId(clientId)
+                                .clientName(tax.getClient().getName())
+                                .nextPaymentDate(tax.getPaymentDeadline())
+                                .taxes(new ArrayList<>())
+                                .build()
+                ).getTaxes().add(taxDetail);
+
             } catch (JsonProcessingException e) {
                 throw new ATMateException(ErrorEnum.INVALID_JSON);
             }
-
-            // Criar um objeto do imposto individual
-            UrgentTaxResponseDTO.TaxDetail taxDetail = UrgentTaxResponseDTO.TaxDetail.builder()
-                    .taxId(tax.getId())
-                    .taxData(tax.getTaxData())
-                    .type(tax.getTaxType().getDescription())
-                    .licensePlate(identifier)
-                    .amount(amount)
-                    .paymentDeadline(tax.getPaymentDeadline())
-                    .daysLeft(ChronoUnit.DAYS.between(LocalDate.now(), tax.getPaymentDeadline()))
-                    .build();
-
-            // Verificar se o cliente já está no mapa
-            clientTaxesMap.computeIfAbsent(tax.getClient().getId(), clientId ->
-                    UrgentTaxResponseDTO.builder()
-                            .clientId(clientId)
-                            .clientName(tax.getClient().getName())
-                            .nextPaymentDate(tax.getPaymentDeadline())
-                            .taxes(new ArrayList<>())
-                            .build()
-            ).getTaxes().add(taxDetail);
         }
 
         // Criar lista a partir do mapa de clientes

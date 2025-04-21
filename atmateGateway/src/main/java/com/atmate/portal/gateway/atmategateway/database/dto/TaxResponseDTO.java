@@ -14,7 +14,6 @@ public class TaxResponseDTO {
 
     String identificadorUnico;
     String tipo;
-    String periodo;
     LocalDate dataLimite;
     String clientName;
     String valor;

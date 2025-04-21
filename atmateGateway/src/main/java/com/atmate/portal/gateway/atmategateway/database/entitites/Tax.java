@@ -1,5 +1,8 @@
 package com.atmate.portal.gateway.atmategateway.database.entitites;
 
+import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
+import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,5 +46,71 @@ public class Tax {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void validateData(){
+
+        if (client == null) {
+            throw new ATMateException(ErrorEnum.INVALID_TAX_CLIENT);
+        }
+
+        if (paymentDeadline == null) {
+            throw new ATMateException(ErrorEnum.INVALID_TAX_DEADLINE_DATE);
+        }
+
+        if (taxData== null || taxData.isBlank()) {
+            throw new ATMateException(ErrorEnum.INVALID_TAX_DATA);
+        }
+    }
+
+    public String getIdentifier(JsonNode jsonNode) {
+        return switch (taxType.getId()) {
+            case 1 -> jsonNode.path("Matrícula").asText(); //IUC
+            case 2 -> jsonNode.path("Nº Nota Cob.").asText(); //IMI
+            default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
+        };
+    }
+
+    public String getAmount(JsonNode jsonNode){
+
+        String amount;
+
+        switch (taxType.getId()) {
+            case 1 -> amount = jsonNode.path("Valor Base").asText(); //IUC
+            case 2 -> amount = jsonNode.path("Valor").asText(); //IMI
+            default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
+        }
+
+        if(amount.contains("EUR")){
+            amount = amount.replace("EUR",  "") + " €";
+        }
+
+        return amount;
+    }
+
+    public String getState(JsonNode jsonNode){
+
+        String state;
+
+        switch (taxType.getId()) {
+            case 1 -> state = jsonNode.path("Situação da Nota").asText(); //IUC
+            case 2 -> state = jsonNode.path("Situação").asText(); //IMI
+            default -> throw new ATMateException(ErrorEnum.INVALID_TAX_TYPE);
+        }
+
+        if(state.equals("-")){
+            state = "Pendente";
+        }
+
+        if(state.contains("Paga")){
+            state = "Pago";
+        }
+
+        if(state.contains("Anulada")) {
+            state = "Anulada";
+        }
+
+        return state;
+    }
+
 }
 

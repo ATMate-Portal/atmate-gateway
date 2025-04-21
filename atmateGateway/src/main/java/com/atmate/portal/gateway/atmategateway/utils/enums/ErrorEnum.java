@@ -15,6 +15,7 @@ public enum ErrorEnum {
     INVALID_TAX_DATA("DATA-005", "Erro ao processar dados do imposto. Contém campos inválidos."),
     INVALID_TAX_DEADLINE_DATE("DATA-006", "Erro ao processar dados do imposto. Data Limite Pagamento inválida."),
     INVALID_TAX_CLIENT("DATA-007", "Erro ao processar dados do imposto. O cliente associado é inválido."),
+    INVALID_TAX_TYPE("DATA-008", "Erro ao processar dados do imposto. Não foi encontrado esse tipo de imposto."),
 
     //INVALID DATA
     INVALID_NIF("INVALID-001", "NIF inválido. Deve conter exatamente 9 dígitos."),

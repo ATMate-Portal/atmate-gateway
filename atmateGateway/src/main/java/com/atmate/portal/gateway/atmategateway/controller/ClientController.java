@@ -46,6 +46,7 @@ public class ClientController {
     @PostMapping("/create")
     public ResponseEntity<Client> createUser2(@RequestBody ClientInputCreateDTO input) throws Exception {
         String nif = String.valueOf(input.getNif());
+
         //Check NIF
         if (nif == null || !nif.matches("\\d{9}")) {
             throw new ATMateException(ErrorEnum.INVALID_NIF);
@@ -56,11 +57,7 @@ public class ClientController {
             throw new ATMateException(ErrorEnum.CLIENT_ALREADY_EXISTS);
         }
 
-        Client client = new Client();
-        client.setNif(input.getNif());
-        client.setName("PENDING");
-        client.setClientType(new ClientType(4, null, null, null)); //TODO terminar logica
-
+        Client client = new Client(input.getNif());
         Client clientSaved = clientService.createClient(client);
 
         if (clientSaved != null) {
