@@ -13,8 +13,8 @@ public class IntegrationClient {
         this.restTemplate = new RestTemplate();
     }
 
-    public void syncClient(Integer clientId) {
-        String url = "http://localhost:8080/atmate-integration/clients/sync/" + clientId;
+    public void syncClient(Integer clientId, boolean getTypeFromAT) {
+        String url = "http://localhost:8080/atmate-integration/clients/sync/" + clientId + "?getTypeFromAT=" + getTypeFromAT;
 
         ResponseEntity<Void> response = restTemplate.getForEntity(url, Void.class);
 

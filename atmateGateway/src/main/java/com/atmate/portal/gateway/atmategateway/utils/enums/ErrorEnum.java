@@ -27,6 +27,8 @@ public enum ErrorEnum {
     //CLIENT ERRORS
     CLIENT_ALREADY_EXISTS("CLIENT-001", "Já existe um cliente com este NIF."),
     CLIENT_SAVE_ERROR("CLIENT-002", "Erro ao guardar cliente."),
+    CLIENT_TYPE_FROM_AT("CLIENT-003", "Tipo de cliente tem que ser verificado junto da AT"),
+    CLIENT_TYPE_ERROR("CLIENT-004", "Tipo de cliente não existe."),
 
     // AUTH ERROS
     CLIENT_NOT_FOUND("DATA-008", "Não foi encontrado nenhum imposto"),

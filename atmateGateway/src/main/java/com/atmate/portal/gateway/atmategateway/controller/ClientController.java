@@ -36,6 +36,8 @@ public class ClientController {
     ContactService contactService;
     @Autowired
     TaxService taxService;
+    @Autowired
+    ClientTypeService clientTypeService;
 
     @GetMapping("/getClients")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
@@ -57,7 +59,21 @@ public class ClientController {
             throw new ATMateException(ErrorEnum.CLIENT_ALREADY_EXISTS);
         }
 
-        Client client = new Client(input.getNif());
+        Optional<ClientType> clientType;
+        boolean getTypeFromAT = false;
+
+        if (nif.startsWith("6")) {
+            clientType = clientTypeService.getClientTypeById(3);
+        } else if (nif.startsWith("5")) {
+            clientType = clientTypeService.getClientTypeById(2);
+        } else if (nif.startsWith("1") || nif.startsWith("2") || nif.startsWith("3")) {
+            clientType = clientTypeService.getClientTypeById(4);
+            getTypeFromAT = true;
+        } else {
+            throw new ATMateException(ErrorEnum.CLIENT_TYPE_ERROR);
+        }
+
+        Client client = new Client(input.getNif(), clientType.orElse(null));
         Client clientSaved = clientService.createClient(client);
 
         if (clientSaved != null) {
@@ -68,7 +84,7 @@ public class ClientController {
             AtCredential newATCredential = atCredentialService.createAtCredential(atCredential);
 
             if (newATCredential != null) {
-                integrationClient.syncClient(client.getId());
+                integrationClient.syncClient(client.getId(), getTypeFromAT);
                 return new ResponseEntity<>(client, HttpStatus.CREATED);
             }
         }

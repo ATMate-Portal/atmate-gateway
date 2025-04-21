@@ -1,5 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.database.entitites;
 
+import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
+import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -73,14 +75,8 @@ public class Client {
         return associatedColaborator != null ? associatedColaborator : "Não associado";
     }
 
-    public Client(Integer nif){
+    public Client(Integer nif, ClientType clientType){
         this.nif = nif;
         this.name = "A obter dados de novo cliente...";
-        //TODO: Decidir corretamente o tipo de type para cada cliente
-        /**
-         * NIF?
-         * AT?
-         */
-        this.clientType = new ClientType(4, null, null, null);
     }
 }
