@@ -14,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Validated
@@ -124,9 +121,11 @@ public class ConfigurationController {
                 return ResponseEntity.ok("No parameters updated");
             }
 
+            String contextChangedParams = buildContextChangedParams(warningDays, urgentDays);
 
             OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
             operationHistoryRequestDTO.setActionCode("CONF-001");
+            operationHistoryRequestDTO.setContextParameter(contextChangedParams);
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
             return ResponseEntity.ok("Parameters updated successfully");
@@ -167,5 +166,18 @@ public class ConfigurationController {
         log.info("Returning ParamsDTO: warningDays={}, urgentDays={}",
                 params.getWarningDays(), params.getUrgencyDays());
         return ResponseEntity.ok(params);
+    }
+
+    public String buildContextChangedParams(Integer warningDays, Integer urgentDays) {
+        StringJoiner params = new StringJoiner(" e ");
+
+        if (warningDays != null) {
+            params.add("Dias de aviso");
+        }
+        if (urgentDays != null) {
+            params.add("Dias de urgência");
+        }
+
+        return params.toString();
     }
 }

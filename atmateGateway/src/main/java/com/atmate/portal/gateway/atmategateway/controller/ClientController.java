@@ -48,6 +48,7 @@ public class ClientController {
 
         OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
         operationHistoryRequestDTO.setActionCode("CHECK-003");
+        operationHistoryRequestDTO.setContextParameter(String.valueOf(clients.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
         return ResponseEntity.ok(clients);
     }
@@ -95,6 +96,7 @@ public class ClientController {
 
                 OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
                 operationHistoryRequestDTO.setActionCode("ADD-001");
+                operationHistoryRequestDTO.setContextParameter(String.valueOf(client.getNif()));
                 operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
                 return new ResponseEntity<>(client, HttpStatus.CREATED);
@@ -128,6 +130,7 @@ public class ClientController {
 
             OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
             operationHistoryRequestDTO.setActionCode("DEL-001");
+            operationHistoryRequestDTO.setContextParameter(clientOptional.get().getName());
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
             
             return new ResponseEntity<>("Cliente eliminado com sucesso.", HttpStatus.OK);

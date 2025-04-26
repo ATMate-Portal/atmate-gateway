@@ -25,32 +25,22 @@ public class OperationHistoryService {
     @Autowired
     UserRepository userRepository;
 
-    public Page<OperationHistoryDTO> getOperationHistory(Integer userId, String actionCode, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+    public Page<OperationHistoryDTO> getOperationHistory(
+            Integer userId,
+            String actionCode,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Pageable pageable) {
         return operationHistoryRepository.findWithFilters(userId, actionCode, startDate, endDate, pageable)
-                .map(operation -> {
-                    // Buscar nome do usuário (se disponível)
-                    String userName;
-                    userName = userRepository.findById(operation.getUser().getId())
-                                .map(user -> user.getUsername() != null ? user.getUsername() : "Utilizador " + operation.getUser().getId())
-                                .orElse("Utilizador Desconhecido");
-
-                    // Formatar mensagem com base no actionCode
-                    String formattedMessage = OperationHistoryActionsEnum.fromActionCode(operation.getUserAction())
-                            .map(action -> {
-                                // Simulação de parâmetro de contexto (substitua pela lógica real)
-                                String contextParam = getContextParameter(action, operation);
-                                return action.formatMessage(userName, contextParam);
-                            })
-                            .orElse("Ação desconhecida: " + operation.getUserAction());
-
-                    return new OperationHistoryDTO(
-                            operation.getId(),
-                            operation.getUser().getId(),
-                            operation.getUser().getUsername(),
-                            formattedMessage,
-                            operation.getCreatedAt()
-                    );
-                });
+                .map(operation -> new OperationHistoryDTO(
+                        operation.getId(),
+                        operation.getUser().getId(),
+                        operation.getUser().getUsername() != null
+                                ? operation.getUser().getUsername()
+                                : "Utilizador Desconhecido",
+                        operation.getUserAction(), // Mensagem formatada diretamente do banco
+                        operation.getCreatedAt()
+                ));
     }
 
     public OperationHistoryDTO createOperationHistory(OperationHistoryRequestDTO request) {
@@ -68,15 +58,15 @@ public class OperationHistoryService {
         // Criar entidade
         OperationHistory operation = new OperationHistory();
         operation.setUser(user.orElse(null));
-        operation.setUserAction(action.getMessage());
+
         operation.setCreatedAt(LocalDateTime.now());
+
+        String formattedMessage = action.formatMessage(userName, request.getContextParameter());
+
+        operation.setUserAction(formattedMessage);
 
         // Salvar no banco
         OperationHistory savedOperation = operationHistoryRepository.save(operation);
-
-        // Formatar mensagem
-        String contextParam = request.getContextParameter() != null ? request.getContextParameter() : getContextParameter(action, savedOperation);
-        String formattedMessage = action.formatMessage(userName, contextParam);
 
         // Retornar DTO
         return new OperationHistoryDTO(
@@ -86,23 +76,5 @@ public class OperationHistoryService {
                 formattedMessage,
                 savedOperation.getCreatedAt()
         );
-    }
-
-    // Método para obter o parâmetro de contexto (simulado, ajuste conforme sua lógica)
-    private String getContextParameter(OperationHistoryActionsEnum action, OperationHistory operation) {
-        // Exemplo: número de registros ou nome do cliente
-        switch (action) {
-            case CHECK_URGENT_FISCAL_TAX:
-            case CHECK_ALL_FISCAL_TAX:
-            case CHECK_ALL_CLIENTS:
-                return "10"; // Simulado, substitua por contagem real
-            case ADD_CLIENT:
-            case DELETE_CLIENT:
-                return "Cliente Exemplo"; // Substitua por nome/ID real do cliente
-            case CHANGE_CONFIG:
-                return "prazos fiscais"; // Substitua por parâmetro real
-            default:
-                return "Desconhecido";
-        }
     }
 }

@@ -28,6 +28,7 @@ public class TaxController {
 
         OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
         operationHistoryRequestDTO.setActionCode("CHECK-001");
+        operationHistoryRequestDTO.setContextParameter(String.valueOf(urgentTaxResponseDTOList.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
         return urgentTaxResponseDTOList;
@@ -41,6 +42,7 @@ public class TaxController {
 
         OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
         operationHistoryRequestDTO.setActionCode("CHECK-002");
+        operationHistoryRequestDTO.setContextParameter(String.valueOf(taxResponseDTOList.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
         return taxResponseDTOList;
