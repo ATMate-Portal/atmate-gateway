@@ -46,6 +46,7 @@ public class OperationHistoryService {
                     return new OperationHistoryDTO(
                             operation.getId(),
                             operation.getUser().getId(),
+                            operation.getUser().getUsername(),
                             formattedMessage,
                             operation.getCreatedAt()
                     );
@@ -84,6 +85,7 @@ public class OperationHistoryService {
         return new OperationHistoryDTO(
                 savedOperation.getId(),
                 savedOperation.getUser().getId(),
+                operation.getUser().getUsername(),
                 formattedMessage,
                 savedOperation.getCreatedAt()
         );

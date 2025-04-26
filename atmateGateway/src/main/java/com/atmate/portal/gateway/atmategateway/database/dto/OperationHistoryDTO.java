@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class OperationHistoryDTO {
     private int id;
     private int userId;
+    private String username;
     private String userAction;
     private LocalDateTime createdAt;
 }
