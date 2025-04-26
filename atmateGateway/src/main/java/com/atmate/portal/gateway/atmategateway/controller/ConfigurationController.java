@@ -164,10 +164,6 @@ public class ConfigurationController {
             params.setUrgencyDays("2"); // Default value
         }
 
-        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
-        operationHistoryRequestDTO.setActionCode("CHECK-005");
-        operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
-
         log.info("Returning ParamsDTO: warningDays={}, urgentDays={}",
                 params.getWarningDays(), params.getUrgencyDays());
         return ResponseEntity.ok(params);

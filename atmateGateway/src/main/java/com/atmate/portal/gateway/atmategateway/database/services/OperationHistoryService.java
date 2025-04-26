@@ -63,10 +63,7 @@ public class OperationHistoryService {
 
         // Buscar usuário e nome do usuário
         Optional<User> user = userRepository.findById(userId);
-        String userName = user
-                .map(u -> u.getUsername() != null ? u.getUsername() : "Utilizador " + userId)
-                .orElse("Utilizador Desconhecido");
-
+        String userName = user.isPresent()?user.get().getUsername():"Utilizador Desconhecido";
 
         // Criar entidade
         OperationHistory operation = new OperationHistory();

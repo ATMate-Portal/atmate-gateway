@@ -55,10 +55,6 @@ public class OperationHistoryController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
         Page<OperationHistoryDTO> history = operationHistoryService.getOperationHistory(userId, actionCode, startDate, endDate, pageable);
 
-        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
-        operationHistoryRequestDTO.setActionCode("CHECK-004");
-        operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
-
         return ResponseEntity.ok(history);
     }
 
