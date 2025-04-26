@@ -20,43 +20,44 @@ public enum OperationHistoryActionsEnum {
      * Consultation of urgent fiscal obligations.
      * {0}: User name or ID, {1}: Number of obligations found.
      */
-    CHECK_URGENT_FISCAL_TAX("CHECK-001", "Usuário {0} consultou {1} obrigações fiscais urgentes."),
+    CHECK_URGENT_FISCAL_TAX("CHECK-001", "Utilizador {0} consultou {1} obrigações fiscais urgentes."),
 
     /**
      * Consultation of all fiscal obligations.
      * {0}: User name or ID, {1}: Number of obligations found.
      */
-    CHECK_ALL_FISCAL_TAX("CHECK-002", "Usuário {0} consultou {1} obrigações fiscais."),
+    CHECK_ALL_FISCAL_TAX("CHECK-002", "Utilizador {0} consultou {1} obrigações fiscais."),
 
     /**
      * Consultation of all clients.
      * {0}: User name or ID, {1}: Number of clients found.
      */
-    CHECK_ALL_CLIENTS("CHECK-003", "Usuário {0} consultou {1} clientes."),
+    CHECK_ALL_CLIENTS("CHECK-003", "Utilizador {0} consultou {1} clientes."),
 
     /**
      * Consultation of operation history.
      * {0}: User name or ID, {1}: Number of operations found.
      */
-    CHECK_HISTORIC("CHECK-004", "Usuário {0} consultou {1} operações no histórico."),
+    CHECK_HISTORIC("CHECK-004", "Utilizador {0} consultou {1} operações no histórico."),
 
+    CHECK_CONFIG("CHECK-005", "Utilizador {0} consultou a parametrização."),
     /**
      * Creation of a new client.
      * {0}: User name or ID, {1}: Client name or ID.
      */
-    ADD_CLIENT("ADD-001", "Usuário {0} criou o cliente {1}."),
+    ADD_CLIENT("ADD-001", "Utilizador {0} criou o cliente {1}."),
 
     /**
      * Deletion of a client.
      * {0}: User name or ID, {1}: Client name or ID.
      */
-    DELETE_CLIENT("DEL-001", "Usuário {0} eliminou o cliente {1}."),
+    DELETE_CLIENT("DEL-001", "Utilizador {0} eliminou o cliente {1}."),
 
     /**
      * Modification of configuration deadlines.
      * {0}: User name or ID, {1}: Parameter changed (e.g., deadline type).
      */
-    CHANGE_CONFIG("CONF-001", "Usuário {0} alterou a parametrização de {1}.");
+    CHANGE_CONFIG("CONF-001", "Utilizador {0} alterou a parametrização de {1}.");
 
     private final String actionCode;
     private final String message;

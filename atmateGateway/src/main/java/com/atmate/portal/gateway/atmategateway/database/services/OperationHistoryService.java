@@ -98,7 +98,6 @@ public class OperationHistoryService {
             case CHECK_URGENT_FISCAL_TAX:
             case CHECK_ALL_FISCAL_TAX:
             case CHECK_ALL_CLIENTS:
-            case CHECK_HISTORIC:
                 return "10"; // Simulado, substitua por contagem real
             case ADD_CLIENT:
             case DELETE_CLIENT:

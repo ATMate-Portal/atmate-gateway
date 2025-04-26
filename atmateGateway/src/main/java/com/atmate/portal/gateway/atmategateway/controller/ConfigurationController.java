@@ -1,8 +1,10 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.ParamsDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
+import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class ConfigurationController {
 
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    OperationHistoryService operationHistoryService;
 
     @PostMapping("/setParams")
     public ResponseEntity<String> setParams(@Valid @RequestBody ParamsDTO paramsDTO) {
@@ -119,6 +124,11 @@ public class ConfigurationController {
                 return ResponseEntity.ok("No parameters updated");
             }
 
+
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("CONF-001");
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
             return ResponseEntity.ok("Parameters updated successfully");
         } catch (Exception e) {
             log.error("Failed to update parameters: {}", e.getMessage(), e);
@@ -153,6 +163,10 @@ public class ConfigurationController {
             log.warn("No configuration found for {}", urgentDaysVarName);
             params.setUrgencyDays("2"); // Default value
         }
+
+        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+        operationHistoryRequestDTO.setActionCode("CHECK-005");
+        operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
         log.info("Returning ParamsDTO: warningDays={}, urgentDays={}",
                 params.getWarningDays(), params.getUrgencyDays());

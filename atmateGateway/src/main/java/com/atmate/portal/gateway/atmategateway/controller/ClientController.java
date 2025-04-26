@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.controller;
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientAtCredentialDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientInputCreateDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.ClientResponseDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
@@ -38,10 +39,16 @@ public class ClientController {
     TaxService taxService;
     @Autowired
     ClientTypeService clientTypeService;
+    @Autowired
+    OperationHistoryService operationHistoryService;
 
     @GetMapping("/getClients")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         List<ClientResponseDTO> clients = clientService.getClients();
+
+        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+        operationHistoryRequestDTO.setActionCode("CHECK-003");
+        operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
         return ResponseEntity.ok(clients);
     }
 
@@ -85,6 +92,11 @@ public class ClientController {
 
             if (newATCredential != null) {
                 integrationClient.syncClient(client.getId(), getTypeFromAT);
+
+                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                operationHistoryRequestDTO.setActionCode("ADD-001");
+                operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
                 return new ResponseEntity<>(client, HttpStatus.CREATED);
             }
         }
@@ -113,6 +125,11 @@ public class ClientController {
             //delete clientNotifications
 
             clientService.deleteClient(id);
+
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("DEL-001");
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+            
             return new ResponseEntity<>("Cliente eliminado com sucesso.", HttpStatus.OK);
         } catch (Exception e) {
             // Log do erro para debugging
