@@ -1,13 +1,13 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.ParamsDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.TaxResponseDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.UrgentTaxResponseDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.*;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
+import com.atmate.portal.gateway.atmategateway.database.entitites.TaxType;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import com.atmate.portal.gateway.atmategateway.database.services.TaxService;
+import com.atmate.portal.gateway.atmategateway.database.services.TaxTypeService;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,7 +28,8 @@ public class TaxController {
 
     @Autowired
     TaxService taxService;
-
+    @Autowired
+    TaxTypeService taxTypeService;
     @Autowired
     OperationHistoryService operationHistoryService;
     @Autowired
@@ -68,6 +70,20 @@ public class TaxController {
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
         return taxResponseDTOList;
+    }
+
+    @GetMapping("/getTypes")
+    public List<TaxTypeResponse> getTypes() {
+
+        List<TaxType> taxTypes = taxTypeService.getAllTaxTypes();
+        List<TaxTypeResponse> taxTypeResponseList = new ArrayList<>();
+
+        for ( TaxType taxType : taxTypes){
+            TaxTypeResponse taxTypeResponse = new TaxTypeResponse(taxType.getId(), taxType.getDescription());
+            taxTypeResponseList.add(taxTypeResponse);
+        }
+
+        return taxTypeResponseList;
     }
 
 

@@ -25,6 +25,9 @@ public class TaxTypeService {
 
     // Ler todos os tipos de imposto
     public List<TaxType> getAllTaxTypes() {
+
+
+
         return taxTypeRepository.findAll();
     }
 
