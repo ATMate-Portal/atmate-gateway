@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @Controller
 @Slf4j
-@CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/notification")
 public class NotificationController {
 
@@ -98,7 +97,7 @@ public class NotificationController {
                             }
 
                             clientNotificationConfig.setFrequency(requestBody.getFrequency());
-                            clientNotificationConfig.setIsActive(Boolean.valueOf(requestBody.getIsActive()));
+                            clientNotificationConfig.setIsActive(requestBody.isActive());
                             clientNotificationConfig.setStartPeriod((byte) requestBody.getStartPeriod());
 
                             ClientNotificationConfig savedConfig = clientNotificationConfigService.createClientNotificationConfig(clientNotificationConfig);
