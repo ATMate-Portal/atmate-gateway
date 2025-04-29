@@ -15,6 +15,6 @@ public class CreateNotificationConfigRequestDTO {
     List<Integer> taxTypeIDs; //Ids
     List<Integer> notificationTypeList; //SMS ou EMAIL
     String frequency;
-    String isActive;
+    boolean active;
     int startPeriod;
 }
