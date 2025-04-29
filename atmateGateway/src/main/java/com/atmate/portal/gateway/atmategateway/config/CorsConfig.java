@@ -24,7 +24,7 @@ public class CorsConfig {
         //    Adicione outras URLs se necessário (ex: produção)
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://atmate.sytes.net"
+                "http://atmate.sytes.net:8180"
         ));
         // config.setAllowedOriginPatterns(List.of("*")); // <<< REMOVIDO/COMENTADO
 
