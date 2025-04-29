@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @Controller
 @Slf4j
+@CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/notification")
 public class NotificationController {
 
