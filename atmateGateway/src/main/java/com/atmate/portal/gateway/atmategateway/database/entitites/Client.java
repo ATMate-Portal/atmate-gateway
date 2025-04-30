@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "clients")
@@ -57,6 +58,14 @@ public class Client {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "client")
+    private List<Address> addresses;
+    @OneToMany(mappedBy = "client")
+    private List<Contact> contacts;
+    @OneToMany(mappedBy = "client")
+    private List<Tax> taxes;
+
 
     @PreUpdate
     public void preUpdate() {
