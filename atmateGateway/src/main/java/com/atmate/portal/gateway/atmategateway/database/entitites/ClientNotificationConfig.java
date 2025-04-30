@@ -39,7 +39,7 @@ public class ClientNotificationConfig {
     private Byte startPeriod;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean active = true;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

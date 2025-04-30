@@ -98,7 +98,7 @@ public class NotificationController {
                             }
 
                             clientNotificationConfig.setFrequency(requestBody.getFrequency());
-                            clientNotificationConfig.setIsActive(requestBody.isActive());
+                            clientNotificationConfig.setActive(requestBody.isActive());
                             clientNotificationConfig.setStartPeriod((byte) requestBody.getStartPeriod());
 
                             ClientNotificationConfig savedConfig = clientNotificationConfigService.createClientNotificationConfig(clientNotificationConfig);
