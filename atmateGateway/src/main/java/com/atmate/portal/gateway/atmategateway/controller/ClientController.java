@@ -1,9 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.ClientAtCredentialDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.ClientInputCreateDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.ClientResponseDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.*;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
@@ -51,6 +48,12 @@ public class ClientController {
         operationHistoryRequestDTO.setContextParameter(String.valueOf(clients.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
         return ResponseEntity.ok(clients);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientInfoResponseDTO> getClientById(@PathVariable Integer id) {
+        ClientInfoResponseDTO clientDetails = clientService.getClientDetails(id);
+        return ResponseEntity.ok(clientDetails);
     }
 
     @PostMapping("/create")
