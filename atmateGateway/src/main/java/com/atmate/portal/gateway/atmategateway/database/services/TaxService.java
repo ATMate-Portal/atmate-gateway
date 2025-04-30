@@ -127,6 +127,11 @@ public class TaxService {
 
                 String identifier = tax.getIdentifier(jsonNode);
                 String amount = tax.getAmount(jsonNode);
+                String state = tax.getState(jsonNode);
+
+                if("Pago".equals(state)){
+                    continue;
+                }
 
                 if (identifier == null || amount == null) {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
