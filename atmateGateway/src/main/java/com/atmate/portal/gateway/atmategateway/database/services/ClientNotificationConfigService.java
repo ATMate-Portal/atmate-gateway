@@ -74,11 +74,25 @@ public class ClientNotificationConfigService {
         return clientNotificationConfigRepository.save(existingConfig);
     }
 
+    @Transactional // Garante que a operação é atômica
+    public ClientNotificationConfig updateClientNotificationConfig(Integer id, boolean active) {
+        // 1. Busca a configuração existente ou lança exceção
+        ClientNotificationConfig existingConfig = clientNotificationConfigRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("ClientNotificationConfig not found with id: " + id)); // Ou ResourceNotFoundException
+
+        existingConfig.setActive(active);
+
+        return clientNotificationConfigRepository.save(existingConfig);
+    }
+
     // Deletar uma configuração de notificação do cliente
-    public void deleteClientNotificationConfig(Integer id) {
+    public boolean deleteClientNotificationConfig(Integer id) {
         if (!clientNotificationConfigRepository.existsById(id)) {
             throw new RuntimeException("Configuração de notificação do cliente não encontrada com ID: " + id);
         }
+
         clientNotificationConfigRepository.deleteById(id);
+
+        return !clientNotificationConfigRepository.existsById(id);
     }
 }
