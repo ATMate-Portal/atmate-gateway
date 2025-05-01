@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.TaxResponseDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UrgentTaxResponseDTO;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.repos.TaxRepository;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
@@ -21,14 +22,11 @@ import java.util.*;
 @Slf4j
 @Service
 public class TaxService {
-    private final TaxRepository taxRepository;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    public TaxService(TaxRepository taxRepository, ObjectMapper objectMapper) {
-        this.taxRepository = taxRepository;
-        this.objectMapper = objectMapper;
-    }
+    private TaxRepository taxRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     // Criar um novo imposto
     public Tax createTax(Tax tax) {
@@ -38,6 +36,10 @@ public class TaxService {
     // Ler todos os impostos
     public List<Tax> getAllTaxes() {
         return taxRepository.findAll();
+    }
+    // Ler todos os impostos
+    public List<Tax> getTaxesByClient(Client client) {
+        return taxRepository.getTaxesByClient(client);
     }
 
     // Ler um imposto por ID

@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.repos.AddressRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class AddressService {
     // Ler todos os endereços
     public List<Address> getAllAddresses() {
         return addressRepository.findAll();
+    }
+
+    public List<Address> getAddressByClient(Client client) {
+        return addressRepository.getAddressesByClient(client);
     }
 
     // Ler um endereço por ID

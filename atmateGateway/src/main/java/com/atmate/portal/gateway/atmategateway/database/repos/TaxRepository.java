@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.repos;
 
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,8 @@ public interface TaxRepository extends JpaRepository<Tax, Integer> {
     void deleteTaxByClientId(int id);
 
     boolean existsTaxByClientId(int id);
+
+    List<Tax> getTaxesByClient(Client client);
 
 }
 

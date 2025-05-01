@@ -1,7 +1,10 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.*;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Contact;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientRepository;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
@@ -20,13 +23,16 @@ import java.util.Optional;
 @Slf4j
 public class ClientService {
 
-    private final ClientRepository clientRepository;
-    private final ObjectMapper objectMapper;
     @Autowired
-    public ClientService(ClientRepository clientRepository, ObjectMapper objectMapper) {
-        this.clientRepository = clientRepository;
-        this.objectMapper = objectMapper;
-    }
+    private ClientRepository clientRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private AddressService addressService;
+    @Autowired
+    private ContactService contactService;
+    @Autowired
+    private TaxService taxService;
 
     // Criar um novo cliente
     public Client createClient(Client client) {
@@ -42,6 +48,8 @@ public class ClientService {
     public Optional<Client> getClientById(Integer id) {
         return clientRepository.findById(id);
     }
+
+
 
     public boolean existsByNif(Integer nif) {
         return clientRepository.existsByNif(nif);
@@ -112,8 +120,9 @@ public class ClientService {
         clientDetails.setBirthDate(client.getBirthDate());
         clientDetails.setLastRefreshDate(client.getLastRefreshDate());
 
+        List<Address> clientAddressess = addressService.getAddressByClient(client);
 
-        List<AddressDTO> addresses = client.getAddresses().stream().map(address -> {
+        List<AddressDTO> addresses = clientAddressess.stream().map(address -> {
             AddressDTO dto = new AddressDTO();
             dto.setStreet(address.getStreet());
             dto.setDoorNumber(address.getDoorNumber());
@@ -129,7 +138,9 @@ public class ClientService {
             return dto;
         }).toList();
 
-        List<ContactDTO> contacts = client.getContacts().stream().map(contact -> {
+        List<Contact> clientContacts = contactService.getContactsByClient(client);
+
+        List<ContactDTO> contacts = clientContacts.stream().map(contact -> {
             ContactDTO dto = new ContactDTO();
             dto.setContactTypeName(contact.getContactType().getDescription()); // Assumindo que ContactType tem "name"
             dto.setContact(contact.getContact());
@@ -140,7 +151,9 @@ public class ClientService {
             return dto;
         }).toList();
 
-        List<TaxResponseDTO> taxes = client.getTaxes().stream().map(tax -> {
+        List<Tax> clientTaxes = taxService.getTaxesByClient(client);
+
+        List<TaxResponseDTO> taxes = clientTaxes.stream().map(tax -> {
             JsonNode jsonNode = null;
             try {
                 TaxResponseDTO dto = new TaxResponseDTO();

@@ -59,14 +59,6 @@ public class Client {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "client")
-    private List<Address> addresses;
-    @OneToMany(mappedBy = "client")
-    private List<Contact> contacts;
-    @OneToMany(mappedBy = "client")
-    private List<Tax> taxes;
-
-
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();

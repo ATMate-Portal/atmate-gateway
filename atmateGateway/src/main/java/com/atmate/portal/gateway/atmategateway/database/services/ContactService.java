@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Contact;
 import com.atmate.portal.gateway.atmategateway.database.repos.ContactRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,13 @@ public class ContactService {
     public List<Contact> getAllContacts() {
         return contactRepository.findAll();
     }
+
+    // Ler todos os contatos
+    public List<Contact> getContactsByClient(Client client) {
+
+        return contactRepository.findContactByClient(client);
+    }
+
 
     // Ler um contato por ID
     public Optional<Contact> getContactById(Integer id) {
