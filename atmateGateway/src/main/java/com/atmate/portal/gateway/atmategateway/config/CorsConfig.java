@@ -27,7 +27,11 @@ public class CorsConfig {
         // 🌍 !!! IMPORTANTE: DEFINIR A ORIGEM EXATA DO FRONTEND !!!
         // Substitua "http://localhost:5173" pela URL exata onde o seu React App corre.
         // Adicione outras URLs de produção se necessário. NÃO USE "*" com allowCredentials=true.
-        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173" // <--- VERIFIQUE E AJUSTE ESTA URL
+                , "http://atmate.sytes.net/"
+                , "http://atmate.sytes.net:4173/"// Exemplo produção
+        ));
         // config.setAllowedOriginPatterns(List.of("*")); // <-- REMOVER/COMENTAR
 
         // ✅ Métodos HTTP permitidos
