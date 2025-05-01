@@ -1,9 +1,14 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotificationConfig;
+import com.atmate.portal.gateway.atmategateway.database.entitites.ContactType;
+import com.atmate.portal.gateway.atmategateway.database.entitites.TaxType;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientNotificationConfigRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,12 +16,12 @@ import java.util.Optional;
 @Service
 public class ClientNotificationConfigService {
 
-    private final ClientNotificationConfigRepository clientNotificationConfigRepository;
-
     @Autowired
-    public ClientNotificationConfigService(ClientNotificationConfigRepository clientNotificationConfigRepository) {
-        this.clientNotificationConfigRepository = clientNotificationConfigRepository;
-    }
+    private ClientNotificationConfigRepository clientNotificationConfigRepository;
+    @Autowired
+    private ContactTypeService contactTypeService;
+    @Autowired
+    private TaxTypeService taxTypeService;
 
     // Criar uma nova configuração de notificação do cliente
     public ClientNotificationConfig createClientNotificationConfig(ClientNotificationConfig clientNotificationConfig) {
@@ -34,13 +39,39 @@ public class ClientNotificationConfigService {
     }
 
     // Atualizar uma configuração de notificação do cliente
-    public ClientNotificationConfig updateClientNotificationConfig(Integer id, ClientNotificationConfig clientNotificationConfigDetails) {
-        ClientNotificationConfig clientNotificationConfig = clientNotificationConfigRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Configuração de notificação do cliente não encontrada com ID: " + id));
+    // Método de atualização
+    @Transactional // Garante que a operação é atômica
+    public ClientNotificationConfig updateClientNotificationConfig(Integer id, UpdateNotificationConfigRequestDTO dto) {
+        // 1. Busca a configuração existente ou lança exceção
+        ClientNotificationConfig existingConfig = clientNotificationConfigRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("ClientNotificationConfig not found with id: " + id)); // Ou ResourceNotFoundException
 
-        clientNotificationConfig = clientNotificationConfigDetails;
+        // 2. Busca as entidades relacionadas (NotificationType e TaxType)
+        // Trate o caso de IDs nulos no DTO, se permitido
+        ContactType notificationType = null;
+        if (dto.getNotificationTypeId() != null) {
+            notificationType = contactTypeService.getContactTypeById(dto.getNotificationTypeId())
+                    .orElseThrow(() -> new EntityNotFoundException("NotificationType not found with id: " + dto.getNotificationTypeId())); // Ou ResourceNotFoundException
+        }
 
-        return clientNotificationConfigRepository.save(clientNotificationConfig);
+        TaxType taxType = null;
+        if (dto.getTaxTypeId() != null) {
+            taxType = taxTypeService.getTaxTypeById(dto.getTaxTypeId())
+                    .orElseThrow(() -> new EntityNotFoundException("TaxType not found with id: " + dto.getTaxTypeId())); // Ou ResourceNotFoundException
+        }
+
+        // 3. Atualiza os campos da entidade existente
+        existingConfig.setNotificationType(notificationType);
+        existingConfig.setTaxType(taxType);
+        existingConfig.setFrequency(dto.getFrequency());
+        existingConfig.setStartPeriod((byte) dto.getStartPeriod()); // Assume que DTO e entidade usam int
+        existingConfig.setActive(dto.getActive());       // Assume que DTO e entidade usam boolean
+
+        // IMPORTANTE: Não atualizamos o 'client' aqui, pois não veio no DTO
+        // e geralmente não se muda o cliente de uma configuração existente desta forma.
+
+        // 4. Salva a entidade atualizada
+        return clientNotificationConfigRepository.save(existingConfig);
     }
 
     // Deletar uma configuração de notificação do cliente

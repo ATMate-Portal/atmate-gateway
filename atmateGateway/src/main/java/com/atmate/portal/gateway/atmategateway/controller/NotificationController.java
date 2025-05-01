@@ -1,10 +1,12 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.CreateNotificationConfigRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -127,31 +129,36 @@ public class NotificationController {
      * Endpoint to update an existing notification configuration.
      *
      * @param id            The ID of the configuration to update (from path variable).
-     * @param updatedConfig The updated notification configuration data from the request body.
+     * @param updatedConfigDTO The updated notification configuration data from the request body.
      * @return ResponseEntity containing the updated configuration, a not found status, or an error status.
      */
     @PutMapping("/update/{id}")
     public ResponseEntity<ClientNotificationConfig> updateNotificationConfig(
             @PathVariable Integer id,
-            @RequestBody ClientNotificationConfig updatedConfig) {
+            @RequestBody UpdateNotificationConfigRequestDTO updatedConfigDTO) { // <-- USA O NOVO DTO
         try {
             log.info("Attempting to update notification configuration with id: {}", id);
 
-            Optional<ClientNotificationConfig> clientNotificationConfig = clientNotificationConfigService.getClientNotificationConfigById(id);
+            // A lógica de chamar o serviço pode ser simplificada se o serviço lançar exceção
+            // em caso de não encontrado, mas vamos manter a verificação Optional aqui por enquanto.
+            Optional<ClientNotificationConfig> existingConfigOpt = clientNotificationConfigService.getClientNotificationConfigById(id);
 
-            if (clientNotificationConfig.isPresent()) {
+            if (existingConfigOpt.isPresent()) {
+                // Passa o DTO correto para o método de serviço
+                ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, updatedConfigDTO);
                 log.info("Successfully updated notification configuration with id: {}", id);
-                ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, updatedConfig);
                 return ResponseEntity.ok(savedConfig);
             } else {
                 log.warn("Notification configuration with id: {} not found for update.", id);
-                return ResponseEntity.notFound().build(); // Return 404 Not Found
+                return ResponseEntity.notFound().build(); // 404 Not Found
             }
 
+        } catch (ResourceNotFoundException rnfe) { // Exemplo: Exceção específica se ID de tipo/imposto não existir
+            log.warn("Resource not found during update for config id {}: {}", id, rnfe.getMessage());
+            return ResponseEntity.badRequest().body(null); // Ou retornar uma mensagem de erro
         } catch (Exception e) {
             log.error("Error updating notification configuration with id {}: {}", id, e.getMessage(), e);
-            // Consider returning a more specific error DTO instead of null
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
         }
     }
 
