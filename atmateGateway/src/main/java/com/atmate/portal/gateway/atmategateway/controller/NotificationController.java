@@ -132,7 +132,7 @@ public class NotificationController {
      * @param updatedConfigDTO The updated notification configuration data from the request body.
      * @return ResponseEntity containing the updated configuration, a not found status, or an error status.
      */
-    @PutMapping("/update/{id}/status")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ClientNotificationConfig> updateNotificationConfig(
             @PathVariable Integer id,
             @RequestBody UpdateNotificationConfigRequestDTO updatedConfigDTO) { // <-- USA O NOVO DTO
@@ -162,7 +162,7 @@ public class NotificationController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}/status")
     public ResponseEntity<ClientNotificationConfig> updateNotificationAtiveConfig(
             @PathVariable Integer id,
             @RequestParam boolean active) {
