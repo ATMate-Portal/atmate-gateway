@@ -41,23 +41,35 @@ public enum OperationHistoryActionsEnum {
     CHECK_HISTORIC("CHECK-004", "Utilizador {0} consultou {1} operações no histórico."),
 
     CHECK_CONFIG("CHECK-005", "Utilizador {0} consultou a parametrização."),
+
+    CHECK_NOTIFICATION_CONFIG("CHECK-006", "Utilizador {0} consultou {1} configurações de notificações."),
     /**
      * Creation of a new client.
      * {0}: User name or ID, {1}: Client name or ID.
      */
     ADD_CLIENT("ADD-001", "Utilizador {0} criou o cliente {1}."),
-
+    /**
+     * Creation of a new client.
+     * {0}: User name or ID, {1}: Client name or ID.
+     */
+    ADD_NOTIFICATION_CONFIG("ADD-002", "Utilizador {0} criou {1} configurações."),
     /**
      * Deletion of a client.
      * {0}: User name or ID, {1}: Client name or ID.
      */
     DELETE_CLIENT("DEL-001", "Utilizador {0} eliminou o cliente {1}."),
+    DELETE_NOTIFICATION_CONFIG("DEL-002", "Utilizador {0} eliminou a configuração de notificação {1}."),
+
+    UPDATE_CONFIG_NOTIFICATION_STATUS("UPD-001", "Utilizador {0} atualizou o estado da notificação {1}."),
+
+    UPDATE_CONFIG_NOTIFICATION("UPD-002", "Utilizador {0} atualizou a notificação {1}."),
 
     /**
      * Modification of configuration deadlines.
      * {0}: User name or ID, {1}: Parameter changed (e.g., deadline type).
      */
     CHANGE_CONFIG("CONF-001", "Utilizador {0} alterou a parametrização de {1}.");
+
 
     private final String actionCode;
     private final String message;

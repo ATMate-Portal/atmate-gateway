@@ -1,6 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.CreateNotificationConfigRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
@@ -31,6 +32,8 @@ public class NotificationController {
     TaxTypeService taxTypeService;
     @Autowired
     ContactTypeService contactTypeService;
+    @Autowired
+    OperationHistoryService operationHistoryService;
 
     @GetMapping("/getNotificationConfig")
     public ResponseEntity<List<ClientNotificationConfig>> getNotificationConfigs() {
@@ -42,6 +45,12 @@ public class NotificationController {
                 return ResponseEntity.ok().body(configs); // Return empty list with 200 OK
             }
             log.info("Successfully retrieved {} notification configurations.", configs.size());
+
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("CHECK-006");
+            operationHistoryRequestDTO.setContextParameter(String.valueOf(configs.size()));
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
             return ResponseEntity.ok().body(configs);
         } catch (Exception e) {
             log.error("Error fetching notification configurations: {}", e.getMessage(), e);
@@ -115,6 +124,11 @@ public class NotificationController {
 
             }
 
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("ADD-002");
+            operationHistoryRequestDTO.setContextParameter(String.valueOf(clientNotificationConfigSavedList.size()));
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
             // Return 201 Created status with the created object in the body
             return ResponseEntity.status(HttpStatus.CREATED).body(clientNotificationConfigSavedList);
         } catch (Exception e) {
@@ -147,6 +161,12 @@ public class NotificationController {
                 // Passa o DTO correto para o método de serviço
                 ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, updatedConfigDTO);
                 log.info("Successfully updated notification configuration with id: {}", id);
+
+                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                operationHistoryRequestDTO.setActionCode("UPD-002");
+                operationHistoryRequestDTO.setContextParameter(String.valueOf(existingConfigOpt.get().getId()));
+                operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
                 return ResponseEntity.ok(savedConfig);
             } else {
                 log.warn("Notification configuration with id: {} not found for update.", id);
@@ -177,6 +197,13 @@ public class NotificationController {
                 // Passa o DTO correto para o método de serviço
                 ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, active);
                 log.info("Successfully updated notification configuration with id: {}", id);
+
+                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                operationHistoryRequestDTO.setActionCode("UPD-001");
+                operationHistoryRequestDTO.setContextParameter(String.valueOf(existingConfigOpt.get().getId()));
+                operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
+
                 return ResponseEntity.ok(savedConfig);
             } else {
                 log.warn("Notification configuration with id: {} not found for update.", id);
@@ -212,6 +239,14 @@ public class NotificationController {
             if (deleted) {
                 log.info("Successfully deleted notification configuration with id: {}", id);
                 // Retorna 204 No Content em caso de sucesso.
+
+                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                operationHistoryRequestDTO.setActionCode("DEL-002");
+                operationHistoryRequestDTO.setContextParameter(String.valueOf(id));
+                operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
+
+
                 return ResponseEntity.noContent().build();
             } else {
                 log.warn("Notification configuration with id: {} not found for deletion.", id);
