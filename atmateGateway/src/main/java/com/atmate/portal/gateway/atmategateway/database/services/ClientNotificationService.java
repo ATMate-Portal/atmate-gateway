@@ -44,10 +44,10 @@ public class ClientNotificationService {
     }
 
     // Deletar uma notificação do cliente
-    public void deleteClientNotification(Integer id) {
-        if (!clientNotificationRepository.existsById(id)) {
+    public void deleteClientNotificationByClientId(Integer id) {
+        if (!clientNotificationRepository.existsClientNotificationByClientId(id)) {
             throw new RuntimeException("Notificação do cliente não encontrada com ID: " + id);
         }
-        clientNotificationRepository.deleteById(id);
+        clientNotificationRepository.deleteClientNotificationByClientId(id);
     }
 }

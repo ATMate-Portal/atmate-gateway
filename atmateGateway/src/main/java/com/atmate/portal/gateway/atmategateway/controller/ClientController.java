@@ -1,10 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.*;
-import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
-import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
-import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
-import com.atmate.portal.gateway.atmategateway.database.entitites.ClientType;
+import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
 import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
@@ -38,6 +35,10 @@ public class ClientController {
     ClientTypeService clientTypeService;
     @Autowired
     OperationHistoryService operationHistoryService;
+    @Autowired
+    ClientNotificationConfigService clientNotificationConfigService;
+    @Autowired
+    ClientNotificationService clientNotificationService;
 
     @GetMapping("/getClients")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
@@ -128,6 +129,8 @@ public class ClientController {
             //delete tax information
             taxService.deleteTaxByClientId(id);
             //delete clientNotifications
+            clientNotificationService.deleteClientNotificationByClientId(id);
+            clientNotificationConfigService.deleteClientNotificationConfigByClientId(id);
 
             clientService.deleteClient(id);
 

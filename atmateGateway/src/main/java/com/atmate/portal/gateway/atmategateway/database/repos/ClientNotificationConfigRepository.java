@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientNotificationConfigRepository extends JpaRepository<ClientNotificationConfig, Integer> {
     // Você pode adicionar métodos personalizados aqui, se necessário
+
+    boolean existsClientNotificationConfigByClientId(Integer id);
+
+    void deleteClientNotificationConfigByClientId(Integer id);
 }
