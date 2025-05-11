@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotification;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientNotificationRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class ClientNotificationService {
         return clientNotificationRepository.save(clientNotification);
     }
 
-    // Deletar uma notificação do cliente
+    @Transactional
     public void deleteClientNotificationByClientId(Integer id) {
         if (!clientNotificationRepository.existsClientNotificationByClientId(id)) {
             throw new RuntimeException("Notificação do cliente não encontrada com ID: " + id);

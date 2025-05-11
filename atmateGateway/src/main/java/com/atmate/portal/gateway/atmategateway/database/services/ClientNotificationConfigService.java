@@ -96,6 +96,7 @@ public class ClientNotificationConfigService {
         return !clientNotificationConfigRepository.existsById(id);
     }
 
+    @Transactional
     public void deleteClientNotificationConfigByClientId(Integer id) {
         if (!clientNotificationConfigRepository.existsClientNotificationConfigByClientId(id)) {
             System.out.println("Configuração de notificação não encontrada com o ID: " + id);
