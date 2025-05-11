@@ -234,6 +234,7 @@ public class NotificationController {
             // Assume-se que o serviço deleteClientNotificationConfig(id) existe
             // e que pode lançar uma exceção se o ID não for encontrado.
             // Uma exceção comum para isto é EmptyResultDataAccessException do Spring Data.
+
             boolean deleted = clientNotificationConfigService.deleteClientNotificationConfig(id); // Modificado para retornar boolean
 
             if (deleted) {

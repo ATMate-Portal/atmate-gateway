@@ -12,5 +12,9 @@ public interface ClientNotificationRepository extends JpaRepository<ClientNotifi
     boolean existsClientNotificationByClientId(Integer id);
 
     void deleteClientNotificationByClientId(Integer id);
+
+    void deleteAllByClientNotificationConfigId(Integer id);
+
+    boolean existsClientNotificationByClientNotificationConfigId(Integer id);
 }
 

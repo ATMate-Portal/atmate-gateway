@@ -22,6 +22,8 @@ public class ClientNotificationConfigService {
     private ContactTypeService contactTypeService;
     @Autowired
     private TaxTypeService taxTypeService;
+    @Autowired
+    private ClientNotificationService clientNotificationService;
 
     // Criar uma nova configuração de notificação do cliente
     public ClientNotificationConfig createClientNotificationConfig(ClientNotificationConfig clientNotificationConfig) {
@@ -91,6 +93,8 @@ public class ClientNotificationConfigService {
             throw new RuntimeException("Configuração de notificação do cliente não encontrada com ID: " + id);
         }
 
+
+
         clientNotificationConfigRepository.deleteById(id);
 
         return !clientNotificationConfigRepository.existsById(id);
@@ -101,6 +105,11 @@ public class ClientNotificationConfigService {
         if (!clientNotificationConfigRepository.existsClientNotificationConfigByClientId(id)) {
             System.out.println("Configuração de notificação não encontrada com o ID: " + id);
         }
+
+        if(clientNotificationService.existsClientNotificationsByConfigurationId(id)){
+            clientNotificationService.deleteAllNotificationsByConfigurationId(id);
+        }
+
 
         clientNotificationConfigRepository.deleteClientNotificationConfigByClientId(id);
     }

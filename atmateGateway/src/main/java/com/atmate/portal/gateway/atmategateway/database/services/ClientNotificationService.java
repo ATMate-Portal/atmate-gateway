@@ -29,6 +29,10 @@ public class ClientNotificationService {
         return clientNotificationRepository.findAll();
     }
 
+    public boolean existsClientNotificationsByConfigurationId(Integer id) {
+        return clientNotificationRepository.existsClientNotificationByClientNotificationConfigId(id);
+    }
+
     // Ler uma notificação do cliente por ID
     public Optional<ClientNotification> getClientNotificationById(Integer id) {
         return clientNotificationRepository.findById(id);
@@ -50,5 +54,10 @@ public class ClientNotificationService {
             throw new RuntimeException("Notificação do cliente não encontrada com ID: " + id);
         }
         clientNotificationRepository.deleteClientNotificationByClientId(id);
+    }
+
+    @Transactional
+    public void deleteAllNotificationsByConfigurationId(Integer id){
+        clientNotificationRepository.deleteAllByClientNotificationConfigId(id);
     }
 }
