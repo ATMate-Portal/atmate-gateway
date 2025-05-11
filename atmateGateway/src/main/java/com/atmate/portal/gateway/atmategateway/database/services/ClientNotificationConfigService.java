@@ -93,7 +93,9 @@ public class ClientNotificationConfigService {
             throw new RuntimeException("Configuração de notificação do cliente não encontrada com ID: " + id);
         }
 
-
+        if(clientNotificationService.existsClientNotificationsByConfigurationId(id)){
+            clientNotificationService.deleteAllNotificationsByConfigurationId(id);
+        }
 
         clientNotificationConfigRepository.deleteById(id);
 
@@ -105,11 +107,6 @@ public class ClientNotificationConfigService {
         if (!clientNotificationConfigRepository.existsClientNotificationConfigByClientId(id)) {
             System.out.println("Configuração de notificação não encontrada com o ID: " + id);
         }
-
-        if(clientNotificationService.existsClientNotificationsByConfigurationId(id)){
-            clientNotificationService.deleteAllNotificationsByConfigurationId(id);
-        }
-
 
         clientNotificationConfigRepository.deleteClientNotificationConfigByClientId(id);
     }
