@@ -109,6 +109,15 @@ public class Tax {
             state = "Anulada";
         }
 
+        if(state.contains("Emitida")) {
+            state = "Emitida";
+        }
+
+        if(state.contains("Pendente de Emissão")) {
+            state = "Pendente de Emissão";
+        }
+
+
         return state;
     }
 

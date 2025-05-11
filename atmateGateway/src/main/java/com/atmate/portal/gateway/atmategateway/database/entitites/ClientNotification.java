@@ -29,6 +29,11 @@ public class ClientNotification {
     private ContactType notificationType;
 
     @Column(nullable = false, length = 100)
+    @NotBlank(message = "O status é obrigatório")
+    @Size(max = 100, message = "O status deve ter no máximo 100 caracteres")
+    private String status;
+
+    @Column(nullable = false, length = 100)
     @NotBlank(message = "O título é obrigatório")
     @Size(max = 100, message = "O título deve ter no máximo 100 caracteres")
     private String title;
