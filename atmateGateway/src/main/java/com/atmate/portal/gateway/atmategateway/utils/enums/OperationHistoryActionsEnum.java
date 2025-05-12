@@ -43,6 +43,8 @@ public enum OperationHistoryActionsEnum {
     CHECK_CONFIG("CHECK-005", "Utilizador {0} consultou a parametrização."),
 
     CHECK_NOTIFICATION_CONFIG("CHECK-006", "Utilizador {0} consultou {1} configurações de notificações."),
+
+    CHECK_NOTIFICATIONS("CHECK-007", "Utilizador {0} consultou {1} notificações."),
     /**
      * Creation of a new client.
      * {0}: User name or ID, {1}: Client name or ID.

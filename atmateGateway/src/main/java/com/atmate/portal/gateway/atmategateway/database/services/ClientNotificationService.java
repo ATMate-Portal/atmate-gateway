@@ -12,12 +12,8 @@ import java.util.Optional;
 @Service
 public class ClientNotificationService {
 
-    private final ClientNotificationRepository clientNotificationRepository;
-
     @Autowired
-    public ClientNotificationService(ClientNotificationRepository clientNotificationRepository) {
-        this.clientNotificationRepository = clientNotificationRepository;
-    }
+    private ClientNotificationRepository clientNotificationRepository;
 
     // Criar uma nova notificação do cliente
     public ClientNotification createClientNotification(ClientNotification clientNotification) {
@@ -46,6 +42,10 @@ public class ClientNotificationService {
         clientNotification = clientNotificationDetails;
 
         return clientNotificationRepository.save(clientNotification);
+    }
+
+    public List<ClientNotification> getClientNotificationsByConfigsId(List<Integer> ids){
+        return clientNotificationRepository.findAllByClientNotificationConfigIdIn(ids);
     }
 
     @Transactional

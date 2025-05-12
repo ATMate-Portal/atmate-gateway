@@ -7,6 +7,7 @@ import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ public class NotificationController {
 
     @Autowired
     ClientNotificationConfigService clientNotificationConfigService;
+    @Autowired
+    ClientNotificationService clientNotificationService;
     @Autowired
     ClientService clientService;
     @Autowired
@@ -55,6 +58,42 @@ public class NotificationController {
         } catch (Exception e) {
             log.error("Error fetching notification configurations: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(null); // Return 500 Internal Server Error
+        }
+    }
+
+    // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)
+    @GetMapping("/getNotifications")
+    public ResponseEntity<List<ClientNotification>> getNotificationConfigsByIds(
+            @RequestParam("ids") List<Integer> ids) {
+        try {
+            // Atualiza o log para indicar quais IDs estão a ser pedidos
+            log.info("A obter configurações de notificação para os IDs: {}", ids);
+
+            List<ClientNotification> configs = clientNotificationService.getClientNotificationsByConfigsId(ids);
+
+            if (configs.isEmpty()) {
+                // Atualiza o log para indicar que não foram encontradas configs para os IDs específicos
+                log.info("Nenhuma configuração de notificação encontrada para os IDs fornecidos: {}", ids);
+                // Retorna 200 OK com lista vazia, como no original
+                return ResponseEntity.ok().body(configs);
+            }
+
+            // Atualiza o log de sucesso
+            log.info("Recuperadas com sucesso {} configurações de notificação para os IDs: {}.", configs.size(), ids);
+
+            // Atualiza o histórico de operações
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("CHECK-007"); // Talvez um novo código de ação? (Opcional)
+            // O parâmetro de contexto pode incluir os IDs pedidos e/ou quantos foram encontrados
+            operationHistoryRequestDTO.setContextParameter(String.valueOf(configs.size()));
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
+            return ResponseEntity.ok().body(configs);
+        } catch (Exception e) {
+            // Atualiza o log de erro para incluir os IDs que causaram o problema
+            log.error("Erro ao obter configurações de notificação para os IDs {}: {}", ids, e.getMessage(), e);
+            // Mantém a resposta de erro 500
+            return ResponseEntity.status(500).body(null);
         }
     }
 

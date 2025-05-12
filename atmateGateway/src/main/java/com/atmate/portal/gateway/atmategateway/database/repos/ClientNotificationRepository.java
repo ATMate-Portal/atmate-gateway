@@ -5,6 +5,8 @@ import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotifica
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClientNotificationRepository extends JpaRepository<ClientNotification, Integer> {
     // Você pode adicionar métodos personalizados aqui, se necessário
@@ -16,5 +18,7 @@ public interface ClientNotificationRepository extends JpaRepository<ClientNotifi
     void deleteAllByClientNotificationConfigId(Integer id);
 
     boolean existsClientNotificationByClientNotificationConfigId(Integer id);
+
+    List<ClientNotification> findAllByClientNotificationConfigIdIn(List<Integer> ids);
 }
 
