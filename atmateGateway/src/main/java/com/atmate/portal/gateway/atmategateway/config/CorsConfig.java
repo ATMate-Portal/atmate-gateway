@@ -5,55 +5,44 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
-// O CorsFilter pode não ser mais necessário se o Spring Security aplicar a configuração
-// import org.springframework.web.filter.CorsFilter;
-
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
-    /**
-     * Define a fonte de configuração CORS como um Bean.
-     * O Spring Security (via http.cors()) irá detetar e usar este Bean automaticamente.
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 🔐 Permitir credenciais (necessário para cookies, Auth headers, etc.)
+        // 🔐 Permitir credenciais (importante se usar cookies, tokens de autenticação, etc.)
         config.setAllowCredentials(true);
 
-        // 🌍 !!! IMPORTANTE: DEFINIR A ORIGEM EXATA DO FRONTEND !!!
-        // Substitua "http://localhost:5173" pela URL exata onde o seu React App corre.
-        // Adicione outras URLs de produção se necessário. NÃO USE "*" com allowCredentials=true.
+        // 🌍 !!! DEFINIR AS ORIGENS PERMITIDAS !!!
+        // Apenas as URLs EXATAS do seu frontend (local e produção).
+        // NÃO use "*" com allowCredentials=true.
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173" // <--- VERIFIQUE E AJUSTE ESTA URL
-                , "http://atmate.sytes.net/"
-                , "http://atmate.sytes.net:4173/"// Exemplo produção
-                , "http://85.241.132.174/"
-                , "https://atmate.online/"
+                "http://localhost:5173",  // <--- Mantenha esta para desenvolvimento local do React (ajuste a porta se for diferente)
+                "https://atmate.online"   // <--- ESTA É A URL DE PRODUÇÃO DO SEU FRONTEND (sem barra no final é mais comum)
+                // Remova as URLs antigas (sytes.net, IP direto) pois não são mais necessárias ou seguras nesta configuração.
         ));
-        // config.setAllowedOriginPatterns(List.of("*")); // <-- REMOVER/COMENTAR
 
         // ✅ Métodos HTTP permitidos
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
 
-        // ✅ Cabeçalhos permitidos (* é geralmente aceitável aqui)
+        // ✅ Cabeçalhos permitidos (* é geralmente aceitável aqui, mas pode ser mais restrito se preferir)
         config.setAllowedHeaders(List.of("*"));
 
         // ✅ Cabeçalhos expostos na resposta que o frontend pode ler
         config.setExposedHeaders(List.of("Authorization", "Content-Type")); // Adicione outros se precisar
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica esta configuração a todos os paths ("/**")
+        // Aplica esta configuração a todos os paths ("/**") da sua API
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 
-    // --- O Bean CorsFilter provavelmente já NÃO é necessário ---
-    // O Spring Security aplicará a configuração definida em corsConfigurationSource()
-    // Comente ou remova este Bean se estiver a usar http.cors() no SecurityConfig.
+    // O CorsFilter geralmente não é necessário se estiver a usar Spring Security com http.cors(),
+    // pois ele usará o Bean corsConfigurationSource() acima.
     /*
     @Bean
     public CorsFilter corsFilter() {
