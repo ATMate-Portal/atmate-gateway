@@ -31,6 +31,8 @@ public class CorsConfig {
                 "http://localhost:5173" // <--- VERIFIQUE E AJUSTE ESTA URL
                 , "http://atmate.sytes.net/"
                 , "http://atmate.sytes.net:4173/"// Exemplo produção
+                , "http://85.241.132.174/"
+                , "https://atmate.online/"
         ));
         // config.setAllowedOriginPatterns(List.of("*")); // <-- REMOVER/COMENTAR
 
