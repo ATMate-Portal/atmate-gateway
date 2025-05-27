@@ -5,6 +5,7 @@ import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequ
 import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
+import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -37,6 +38,8 @@ public class NotificationController {
     ContactTypeService contactTypeService;
     @Autowired
     OperationHistoryService operationHistoryService;
+    @Autowired
+    IntegrationClient integrationClient;
 
     @GetMapping("/getNotificationConfig")
     public ResponseEntity<List<ClientNotificationConfig>> getNotificationConfigs() {
@@ -308,4 +311,60 @@ public class NotificationController {
     }
     // --- FIM DO NOVO MÉTODO DELETE ---
 
+    // --- NOVO MÉTODO PARA FORÇAR ENVIO ---
+    /**
+     * Endpoint to force the immediate dispatch of notifications for a specific configuration.
+     *
+     * @param configId The ID of the ClientNotificationConfig to trigger.
+     * @return ResponseEntity indicating the outcome of the operation.
+     */
+    @PostMapping("/forceSend/{configId}")
+    public ResponseEntity<?> forceSendNotification(@PathVariable Integer configId) {
+        try {
+            log.info("Attempting to force send notifications for configuration ID: {}", configId);
+
+            // Passo 1: Verificar se a configuração existe e está ativa (ou outra lógica de negócio)
+            Optional<ClientNotificationConfig> configOpt = clientNotificationConfigService.getClientNotificationConfigById(configId);
+            if (configOpt.isEmpty()) {
+                log.warn("Notification configuration with ID {} not found for force send.", configId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Configuração de notificação com ID " + configId + " não encontrada.");
+            }
+
+            ClientNotificationConfig config = configOpt.get();
+            // if (!config.isActive()) {
+            //     log.warn("Notification configuration with ID {} is inactive. Force send aborted.", configId);
+            //     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            //                          .body("A configuração de notificação com ID " + configId + " está inativa e não pode ser enviada manualmente.");
+            // }
+
+            int notificationsTriggeredCount = integrationClient.sendNotification(configId);
+
+            if (notificationsTriggeredCount == 0) {
+                log.info("No notifications were actively triggered for config ID {} (e.g., no matching clients found or already sent recently).", configId);
+                // Mesmo que nada seja disparado, a operação de "forçar" foi tentada.
+            } else {
+                log.info("Successfully triggered {} notifications for configuration ID: {}", notificationsTriggeredCount, configId);
+            }
+
+            // Passo 3: Registar a operação no histórico
+            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            operationHistoryRequestDTO.setActionCode("FORCE-SEND-001"); // Novo código de ação
+            operationHistoryRequestDTO.setContextParameter("ConfigID: " + configId + ", Triggered: " + notificationsTriggeredCount);
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
+            return ResponseEntity.ok().body("Processo de envio forçado para a configuração ID " + configId + " despoletou " + notificationsTriggeredCount + " notificação(ões).");
+
+        } catch (ResourceNotFoundException e) { // Lançado pelo serviço se o configId não for encontrado
+            log.warn("Resource not found during force send for config ID {}: {}", configId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) { // Exemplo: Se o serviço determinar que não pode forçar o envio (e.g. inativa)
+            log.warn("Illegal state for forcing send for config ID {}: {}", configId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error forcing notification send for configuration ID {}: {}", configId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ocorreu um erro inesperado ao tentar forçar o envio da notificação.");
+        }
+    }
 }

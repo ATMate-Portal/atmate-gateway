@@ -14,12 +14,24 @@ public class IntegrationClient {
     }
 
     public void syncClient(Integer clientId, boolean getTypeFromAT) {
-        String url = "http://localhost:8080/atmate-integration/clients/sync/" + clientId + "?getTypeFromAT=" + getTypeFromAT;
+        String url = "http://localhost:8080/atmate-integration/gateway/sync/" + clientId + "?getTypeFromAT=" + getTypeFromAT;
 
         ResponseEntity<Void> response = restTemplate.getForEntity(url, Void.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Erro ao sincronizar cliente com ID " + clientId);
         }
+    }
+
+    public int sendNotification(Integer configId) {
+        String url = "http://localhost:8080/atmate-integration/gateway/sendNotification/" + configId;
+
+        ResponseEntity<?> response = restTemplate.getForEntity(url, Void.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Erro ao sincronizar cliente com ID " + configId);
+        }
+
+        return (int) response.getBody();
     }
 }
