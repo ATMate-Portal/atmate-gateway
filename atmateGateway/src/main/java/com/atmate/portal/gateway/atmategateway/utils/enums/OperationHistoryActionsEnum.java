@@ -66,7 +66,7 @@ public enum OperationHistoryActionsEnum {
 
     UPDATE_CONFIG_NOTIFICATION("UPD-002", "Utilizador {0} atualizou a notificação {1}."),
 
-    FORCE_SEND_NOTIFICATION("FORCE-SEND-001", "Foram enviadas {0} notificações"),
+    FORCE_SEND_NOTIFICATION("FORCE-SEND-001", "Utilizador {0} enviou {1} notificações"),
 
     /**
      * Modification of configuration deadlines.
