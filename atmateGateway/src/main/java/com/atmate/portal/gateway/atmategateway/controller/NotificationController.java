@@ -350,7 +350,7 @@ public class NotificationController {
             // Passo 3: Registar a operação no histórico
             OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
             operationHistoryRequestDTO.setActionCode("FORCE-SEND-001"); // Novo código de ação
-            operationHistoryRequestDTO.setContextParameter("ConfigID: " + configId + ", Triggered: " + notificationsTriggeredCount);
+            operationHistoryRequestDTO.setContextParameter(String.valueOf(notificationsTriggeredCount));
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
 
             return ResponseEntity.ok().body("Processo de envio forçado para a configuração ID " + configId + " despoletou " + notificationsTriggeredCount + " notificação(ões).");
