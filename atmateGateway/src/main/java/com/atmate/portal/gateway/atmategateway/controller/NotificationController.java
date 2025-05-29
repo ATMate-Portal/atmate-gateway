@@ -1,6 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.CreateNotificationConfigRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.NotificationClientDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
@@ -62,6 +63,14 @@ public class NotificationController {
             log.error("Error fetching notification configurations: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(null); // Return 500 Internal Server Error
         }
+    }
+
+    // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)
+    @GetMapping("/getNotifications/{clientId}")
+    public ResponseEntity<List<NotificationClientDTO>> getNotificationClientByClientId(@PathVariable Integer clientId){
+        List<NotificationClientDTO> list = clientNotificationService.getClientNotificationByClientId(clientId);
+        return ResponseEntity.ok(list);
+
     }
 
     // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)

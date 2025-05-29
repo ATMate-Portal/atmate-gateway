@@ -1,11 +1,16 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.NotificationClientDTO;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotification;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientNotificationRepository;
+import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
+import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +19,9 @@ public class ClientNotificationService {
 
     @Autowired
     private ClientNotificationRepository clientNotificationRepository;
+
+    @Autowired
+    ClientService clientService;
 
     // Criar uma nova notificação do cliente
     public ClientNotification createClientNotification(ClientNotification clientNotification) {
@@ -32,6 +40,27 @@ public class ClientNotificationService {
     // Ler uma notificação do cliente por ID
     public Optional<ClientNotification> getClientNotificationById(Integer id) {
         return clientNotificationRepository.findById(id);
+    }
+
+    // Ler uma notificação do cliente por ID
+    public List<NotificationClientDTO> getClientNotificationByClientId(Integer id) {
+        Client client = clientService.getClientById(id)
+                .orElseThrow(() -> new ATMateException(ErrorEnum.CLIENT_NOT_FOUND));
+        List<ClientNotification> list = clientNotificationRepository.getClientNotificationByClient(client);
+        List<NotificationClientDTO> listOut = new ArrayList<>();
+        for(ClientNotification cn : list){
+            NotificationClientDTO cnDTO = new NotificationClientDTO();
+            cnDTO.setClientId(cn.getClient().getId());
+            cnDTO.setNotificationType(cn.getNotificationType().getDescription());
+            cnDTO.setTaxType(cn.getTaxType().getDescription());
+            cnDTO.setStatus(cn.getStatus());
+            cnDTO.setTitle(cn.getTitle());
+            cnDTO.setMessage(cn.getMessage());
+            cnDTO.setSendDate(cn.getSendDate());
+
+            listOut.add(cnDTO);
+        }
+        return listOut;
     }
 
     // Atualizar uma notificação do cliente
