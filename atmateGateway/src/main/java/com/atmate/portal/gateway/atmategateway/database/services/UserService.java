@@ -4,6 +4,7 @@ import com.atmate.portal.gateway.atmategateway.database.entitites.User;
 import com.atmate.portal.gateway.atmategateway.database.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,39 +19,28 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // Criar um novo usuário
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public Optional<User> findByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 
-    // Ler todos os usuários
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Optional<User> findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
-    // Ler um usuário por ID
-    public Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
-    }
-
-    // Atualizar um usuário
-    public User updateUser(Integer id, User userDetails) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
-
-        // Atualizar os campos do usuário
-        user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword());
-        user.setEmail(userDetails.getEmail());
-
-        return userRepository.save(user);
-    }
-
-    // Deletar um usuário
-    public void deleteUser(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("Usuário não encontrado com ID: " + id);
+    // Novo método para registar utilizador
+    @Transactional // Garante que a operação é atómica
+    public User createUser(User user) throws Exception {
+        // Verificar se o email já existe
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new Exception("Já existe uma conta com o email: " + user.getEmail());
         }
-        userRepository.deleteById(id);
+
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+             throw new Exception("Nome de utilizador já em uso: " + user.getUsername());
+        }
+
+        return userRepository.save(user);
     }
+
+
 }
