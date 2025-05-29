@@ -65,6 +65,22 @@ public class JWTTokenService {
 
     // VVV NOVOS MÉTODOS ADICIONADOS ABAIXO VVV
 
+    // Método para obter todos os claims
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(jwtSecretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Long getUserIdFromToken(String token) {
+        // Os claims numéricos podem ser lidos como Integer ou Long dependendo de como foram inseridos
+        // e da biblioteca JWT. É mais seguro ler como Number e converter.
+        Number userIdNum = getAllClaimsFromToken(token).get("userId", Number.class);
+        return userIdNum != null ? userIdNum.longValue() : null;
+    }
+
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(jwtSecretKey)
