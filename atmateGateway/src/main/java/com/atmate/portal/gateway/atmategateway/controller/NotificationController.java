@@ -66,12 +66,12 @@ public class NotificationController {
     }
 
     // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)
-    @GetMapping("/getNotifications/{clientId}")
-    public ResponseEntity<List<NotificationClientDTO>> getNotificationClientByClientId(@PathVariable Integer clientId){
-        List<NotificationClientDTO> list = clientNotificationService.getClientNotificationByClientId(clientId);
-        return ResponseEntity.ok(list);
+    //@GetMapping("/getNotifications/{clientId}")
+    //public ResponseEntity<List<NotificationClientDTO>> getNotificationClientByClientId(@PathVariable Integer clientId){
+    //    List<NotificationClientDTO> list = clientNotificationService.getClientNotificationByClientId(clientId);
+    //     return ResponseEntity.ok(list);
 
-    }
+    //}
 
     // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)
     @GetMapping("/getNotifications")

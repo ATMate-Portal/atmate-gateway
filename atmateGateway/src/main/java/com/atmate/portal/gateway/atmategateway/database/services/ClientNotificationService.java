@@ -20,9 +20,6 @@ public class ClientNotificationService {
     @Autowired
     private ClientNotificationRepository clientNotificationRepository;
 
-    @Autowired
-    ClientService clientService;
-
     // Criar uma nova notificação do cliente
     public ClientNotification createClientNotification(ClientNotification clientNotification) {
         return clientNotificationRepository.save(clientNotification);
@@ -43,9 +40,7 @@ public class ClientNotificationService {
     }
 
     // Ler uma notificação do cliente por ID
-    public List<NotificationClientDTO> getClientNotificationByClientId(Integer id) {
-        Client client = clientService.getClientById(id)
-                .orElseThrow(() -> new ATMateException(ErrorEnum.CLIENT_NOT_FOUND));
+    public List<NotificationClientDTO> getClientNotificationByClientId(Client client) {
         List<ClientNotification> list = clientNotificationRepository.getClientNotificationByClient(client);
         List<NotificationClientDTO> listOut = new ArrayList<>();
         for(ClientNotification cn : list){

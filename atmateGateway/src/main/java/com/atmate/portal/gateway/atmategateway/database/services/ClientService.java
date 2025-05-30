@@ -33,6 +33,8 @@ public class ClientService {
     private ContactService contactService;
     @Autowired
     private TaxService taxService;
+    @Autowired
+    private ClientNotificationService clientNotificationService;
 
     // Criar um novo cliente
     public Client createClient(Client client) {
@@ -184,9 +186,12 @@ public class ClientService {
             
         }).toList();
 
+        List<NotificationClientDTO> notifications = clientNotificationService.getClientNotificationByClientId(client);
+
         clientDetails.setAddresses(addresses);
         clientDetails.setContacts(contacts);
         clientDetails.setTaxes(taxes);
+        clientDetails.setNotifications(notifications);
 
         return clientDetails;
     }

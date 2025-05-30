@@ -19,5 +19,6 @@ public class ClientInfoResponseDTO {
     private List<AddressDTO> addresses;
     private List<ContactDTO> contacts;
     private List<TaxResponseDTO> taxes;
+    private List<NotificationClientDTO> notifications;
 }
 
