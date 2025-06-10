@@ -7,6 +7,8 @@ import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationCo
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
 import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +27,7 @@ import java.util.Optional;
 @Slf4j
 @CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/notification")
+@Tag(name = "Gestão de notificações")
 public class NotificationController {
 
     @Autowired
@@ -43,6 +46,10 @@ public class NotificationController {
     IntegrationClient integrationClient;
 
     @GetMapping("/getNotificationConfig")
+    @Operation(
+            summary = "Obter todas as configurações de notificações",
+            description = "Endpoint que retorna as configurações de notificações."
+    )
     public ResponseEntity<List<ClientNotificationConfig>> getNotificationConfigs() {
         try {
             log.info("Fetching notification configurations");
@@ -75,6 +82,10 @@ public class NotificationController {
 
     // Mantém o mapping original ou altera se fizer mais sentido (ex: /getNotificationsByIds)
     @GetMapping("/getNotifications")
+    @Operation(
+            summary = "Obter configurações de notificações",
+            description = "Endpoint que retorna as configurações de notificações pelos seus IDs"
+    )
     public ResponseEntity<List<ClientNotification>> getNotificationConfigsByIds(
             @RequestParam("ids") List<Integer> ids) {
         try {
@@ -116,6 +127,10 @@ public class NotificationController {
      * @return ResponseEntity containing the created configuration or an error status.
      */
     @PostMapping("/create")
+    @Operation(
+            summary = "Criar configurações de notificações.",
+            description = "Endpoint que recebe a informação de uma notificação e cria uma configuração."
+    )
     public ResponseEntity createNotificationConfig(@RequestBody CreateNotificationConfigRequestDTO requestBody) {
         try {
             log.info("Attempting to create new notification configuration");
@@ -198,6 +213,10 @@ public class NotificationController {
      * @return ResponseEntity containing the updated configuration, a not found status, or an error status.
      */
     @PutMapping("/update/{id}")
+    @Operation(
+            summary = "Atualizar configurações de notificações.",
+            description = "Endpoint que recebe a informação de uma notificação e atualiza uma configuração pelo seu ID"
+    )
     public ResponseEntity<ClientNotificationConfig> updateNotificationConfig(
             @PathVariable Integer id,
             @RequestBody UpdateNotificationConfigRequestDTO updatedConfigDTO) { // <-- USA O NOVO DTO
@@ -234,6 +253,10 @@ public class NotificationController {
     }
 
     @PutMapping("/update/{id}/status")
+    @Operation(
+            summary = "Atualizar estado da configuração de notificação",
+            description = "Endpoint que atualiza o estado da configuração de notificação através do seu ID."
+    )
     public ResponseEntity<ClientNotificationConfig> updateNotificationAtiveConfig(
             @PathVariable Integer id,
             @RequestParam boolean active) {
@@ -278,6 +301,10 @@ public class NotificationController {
      * @return ResponseEntity indicating success (204 No Content), not found (404), or error (500).
      */
     @DeleteMapping("/delete/{id}")
+    @Operation(
+            summary = "Eliminar configuração de notificação",
+            description = "Endpoint que elimina uma configuração de notificação através do seu ID."
+    )
     public ResponseEntity<Void> deleteNotificationConfig(@PathVariable Integer id) {
         try {
             log.info("Attempting to delete notification configuration with id: {}", id);
@@ -328,6 +355,10 @@ public class NotificationController {
      * @return ResponseEntity indicating the outcome of the operation.
      */
     @PostMapping("/forceSend/{configId}")
+    @Operation(
+            summary = "Forçar envio de notificação",
+            description = "Endpoint que força o envio da notificação através do ID da sua configuração."
+    )
     public ResponseEntity<?> forceSendNotification(@PathVariable Integer configId) {
         try {
             log.info("Attempting to force send notifications for configuration ID: {}", configId);

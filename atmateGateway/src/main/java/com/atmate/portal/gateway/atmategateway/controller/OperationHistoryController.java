@@ -3,6 +3,8 @@ package com.atmate.portal.gateway.atmategateway.controller;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/operation-history")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Histórico de operações")
 public class OperationHistoryController {
 
     @Autowired
@@ -39,6 +42,10 @@ public class OperationHistoryController {
      * @return A paginated list of operation history entries.
      */
     @GetMapping
+    @Operation(
+            summary = "Obter histórico de operações",
+            description = "Endpoint que retorna o histórico de operações."
+    )
     public ResponseEntity<Page<OperationHistoryDTO>> getOperationHistory(
             @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) String actionCode,
@@ -65,6 +72,10 @@ public class OperationHistoryController {
      * @return The created operation history entry.
      */
     @PostMapping
+    @Operation(
+            summary = "Registar operação no histórico de operações",
+            description = "Endpoint que cria um registo no histórico de operações."
+    )
     public ResponseEntity<OperationHistoryDTO> createOperationHistory(@Valid @RequestBody OperationHistoryRequestDTO request) {
         log.info("Creating operation history: userId={}, actionCode={}, contextParameter={}",
                 request.getUserId(), request.getActionCode(), request.getContextParameter());

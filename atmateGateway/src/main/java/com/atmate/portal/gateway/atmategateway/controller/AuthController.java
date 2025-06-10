@@ -7,6 +7,8 @@ import com.atmate.portal.gateway.atmategateway.database.dto.UserDetailsDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
 import com.atmate.portal.gateway.atmategateway.database.services.UserService;
 import com.atmate.portal.gateway.atmategateway.services.JWTTokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth") // Endpoint base para autenticação
+@Tag(name = "Autenticação") // Ver ponto 2
 public class AuthController {
 
     @Autowired
@@ -32,6 +35,10 @@ public class AuthController {
     private JWTTokenService jwtTokenProvider;
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Realizar o login de um utilizador",
+            description = "Endpoint que recebe um email e uma password e faz o login de um utilizador se estes estiverem corretos. É criado um token JWT."
+    )
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         // 1. Validar o pedido (o @Valid faz isso se tiveres anotações no DTO)
         if (loginRequest.getEmail() == null || loginRequest.getEmail().isEmpty() ||
@@ -66,6 +73,10 @@ public class AuthController {
 
     // NOVO ENDPOINT DE REGISTO
     @PostMapping("/create")
+    @Operation(
+            summary = "Criar um utilizador",
+            description = "Endpoint que a informação do novo utilizador (email, password, username) e cria o utilizador."
+    )
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest registerRequest) {
         try {
 

@@ -10,6 +10,8 @@ import com.atmate.portal.gateway.atmategateway.database.services.TaxService;
 import com.atmate.portal.gateway.atmategateway.database.services.TaxTypeService;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/tax")
 @Slf4j
+@Tag(name = "Gestão de impostos")
 public class TaxController {
 
     @Autowired
@@ -38,6 +41,10 @@ public class TaxController {
     @Value("${warning.days.value:warning_days}")
     private String warningDaysVarName;
     @GetMapping("/getUrgentTaxes")
+    @Operation(
+            summary = "Obter impostos urgentes dos clientes",
+            description = "Endpoint que retorna todos os impostos mais urgentes (dependendo dos parâmetros)"
+    )
     public List<UrgentTaxResponseDTO> getUrgentTaxes(@RequestParam Integer days) {
 
         List<UrgentTaxResponseDTO> urgentTaxResponseDTOList = taxService.getUrgentTaxes(days);
@@ -59,7 +66,10 @@ public class TaxController {
     }
 
     @GetMapping("/getTaxes")
-
+    @Operation(
+            summary = "Obter impostos dos clientes",
+            description = "Endpoint que retorna todos os impostos dos clientes"
+    )
     public List<TaxResponseDTO> getTaxes() {
 
         List<TaxResponseDTO> taxResponseDTOList =  taxService.getTaxes();
@@ -73,6 +83,10 @@ public class TaxController {
     }
 
     @GetMapping("/getTypes")
+    @Operation(
+            summary = "Obter tipos de impostos",
+            description = "Endpoint que retorna todos os tipos de impostos dos clientes"
+    )
     public List<TaxTypeResponse> getTypes() {
 
         List<TaxType> taxTypes = taxTypeService.getAllTaxTypes();

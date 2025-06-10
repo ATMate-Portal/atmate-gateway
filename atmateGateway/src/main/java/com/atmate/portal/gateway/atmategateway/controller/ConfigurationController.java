@@ -5,6 +5,8 @@ import com.atmate.portal.gateway.atmategateway.database.dto.ParamsDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.*;
 @Validated
 @RestController
 @RequestMapping("/config")
+@Tag(name = "Configurações")
 public class ConfigurationController {
 
     @Value("${warning.days.value:warning_days}")
@@ -35,6 +38,10 @@ public class ConfigurationController {
     OperationHistoryService operationHistoryService;
 
     @PostMapping("/setParams")
+    @Operation(
+            summary = "Atualizar parâmetros de urgência",
+            description = "Endpoint que atualiza os dias de aviso/urgência da página principal"
+    )
     public ResponseEntity<String> setParams(@Valid @RequestBody ParamsDTO paramsDTO) {
         log.info("Received request to set parameters: warningDays={}, urgentDays={}",
                 paramsDTO.getWarningDays(), paramsDTO.getUrgencyDays());
@@ -138,6 +145,10 @@ public class ConfigurationController {
 
     // Existing /getParams endpoint (for reference)
     @GetMapping("/getParams")
+    @Operation(
+            summary = "Obter parâmetros",
+            description = "Endpoint que retorna os parâmetros de aviso/urgência da página principal"
+    )
     public ResponseEntity<ParamsDTO> getParams() {
         log.info("Fetching configuration parameters for warning_days_varname={} and urgent_days_varname={}",
                 warningDaysVarName, urgentDaysVarName);

@@ -6,6 +6,8 @@ import com.atmate.portal.gateway.atmategateway.database.services.*;
 import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/clients")
+@Tag(name = "Gestão de clientes")
 @Slf4j
 public class ClientController {
 
@@ -41,6 +44,10 @@ public class ClientController {
     ClientNotificationService clientNotificationService;
 
     @GetMapping("/getClients")
+    @Operation(
+            summary = "Obter todos os clientes",
+            description = "Endpoint que retorna todos os clientes e suas informações detalhadas"
+    )
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         List<ClientResponseDTO> clients = clientService.getClients();
 
@@ -52,13 +59,21 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Obter um cliente",
+            description = "Endpoint que retorna um cliente através do seu ID."
+    )
     public ResponseEntity<ClientInfoResponseDTO> getClientById(@PathVariable Integer id) {
         ClientInfoResponseDTO clientDetails = clientService.getClientDetails(id);
         return ResponseEntity.ok(clientDetails);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Client> createUser(@RequestBody ClientInputCreateDTO input) throws Exception {
+    @Operation(
+            summary = "Criar um cliente",
+            description = "Endpoint que recebe as credenciais da AT e cria um cliente."
+    )
+    public ResponseEntity<Client> createClient(@RequestBody ClientInputCreateDTO input) throws Exception {
         String nif = String.valueOf(input.getNif());
 
         //Check NIF
@@ -110,6 +125,10 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Operation(
+            summary = "Eliminar um cliente",
+            description = "Endpoint que elimina um cliente através do seu ID."
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClient(@PathVariable Integer id) {
         Optional<Client> clientOptional = clientService.getClientById(id); // Procura o cliente pelo ID antes de eliminar

@@ -1,5 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/info")
+@Tag(name = "Informação da API")
 public class InfoController {
 
     private final HealthEndpoint healthEndpoint;
@@ -37,6 +40,10 @@ public class InfoController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Obter informação da API",
+            description = "Endpoint que retorna informação sobre a API"
+    )
     public ResponseEntity<Map<String, Object>> getInfo() {
         Map<String, Object> info = new HashMap<>();
         info.put("applicationName", appName);
@@ -49,6 +56,10 @@ public class InfoController {
     }
 
     @GetMapping("/details")
+    @Operation(
+            summary = "Obter detalhes da informação da API",
+            description = "Endpoint que retorna os detalhes da informação sobre a API"
+    )
     public ResponseEntity<Map<String, Object>> getDetails() {
         Map<String, Object> details = new HashMap<>();
         details.put("applicationName", appName);
@@ -61,7 +72,12 @@ public class InfoController {
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
+
     @GetMapping("/status")
+    @Operation(
+            summary = "Obter status da API",
+            description = "Endpoint que retorna o estado da API"
+    )
     public ResponseEntity<Map<String, Object>> getStatus() {
         HealthComponent health = healthEndpoint.health();
         Map<String, Object> status = new HashMap<>();
@@ -75,6 +91,10 @@ public class InfoController {
     }
 
     @GetMapping("/version")
+    @Operation(
+            summary = "Obter versão da API",
+            description = "Endpoint que retorna a versão da API"
+    )
     public ResponseEntity<Map<String, String>> getVersion() {
         Map<String, String> versionInfo = new HashMap<>();
         versionInfo.put("version", appVersion);
