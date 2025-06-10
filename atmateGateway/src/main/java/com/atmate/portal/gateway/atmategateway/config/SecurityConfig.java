@@ -18,6 +18,12 @@ public class SecurityConfig {
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] SWAGGER_WHITELIST_URLS = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
+
     @Autowired // Ou usa injeção via construtor (preferível)
     public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -37,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/create").permitAll() // O teu endpoint de registo, correto
+                        .requestMatchers(SWAGGER_WHITELIST_URLS).permitAll()
                         .anyRequest().authenticated() // Todas as outras rotas requerem autenticação
                 )
                 // V ADICIONAR O FILTRO JWT AQUI V
