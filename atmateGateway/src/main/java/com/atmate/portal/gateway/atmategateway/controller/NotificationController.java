@@ -1,7 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.CreateNotificationConfigRequestDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.NotificationClientDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
@@ -11,14 +10,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -242,10 +238,6 @@ public class NotificationController {
                 log.warn("Notification configuration with id: {} not found for update.", id);
                 return ResponseEntity.notFound().build(); // 404 Not Found
             }
-
-        } catch (ResourceNotFoundException rnfe) { // Exemplo: Exceção específica se ID de tipo/imposto não existir
-            log.warn("Resource not found during update for config id {}: {}", id, rnfe.getMessage());
-            return ResponseEntity.badRequest().body(null); // Ou retornar uma mensagem de erro
         } catch (Exception e) {
             log.error("Error updating notification configuration with id {}: {}", id, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
@@ -283,10 +275,6 @@ public class NotificationController {
                 log.warn("Notification configuration with id: {} not found for update.", id);
                 return ResponseEntity.notFound().build(); // 404 Not Found
             }
-
-        } catch (ResourceNotFoundException rnfe) { // Exemplo: Exceção específica se ID de tipo/imposto não existir
-            log.warn("Resource not found during update for config id {}: {}", id, rnfe.getMessage());
-            return ResponseEntity.badRequest().body(null); // Ou retornar uma mensagem de erro
         } catch (Exception e) {
             log.error("Error updating notification configuration with id {}: {}", id, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
@@ -333,11 +321,6 @@ public class NotificationController {
                 return ResponseEntity.notFound().build(); // 404 Not Found
             }
 
-        }
-        // Se o serviço lançar uma exceção personalizada:
-        catch (ResourceNotFoundException e) {
-            log.warn("Notification configuration with id: {} not found for deletion.", id);
-            return ResponseEntity.notFound().build(); // 404 Not Found
         }
         catch (Exception e) {
             log.error("Error deleting notification configuration with id {}: {}", id, e.getMessage(), e);
@@ -395,9 +378,6 @@ public class NotificationController {
 
             return ResponseEntity.ok().body("Processo de envio forçado para a configuração ID " + configId + " despoletou " + notificationsTriggeredCount + " notificação(ões).");
 
-        } catch (ResourceNotFoundException e) { // Lançado pelo serviço se o configId não for encontrado
-            log.warn("Resource not found during force send for config ID {}: {}", configId, e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalStateException e) { // Exemplo: Se o serviço determinar que não pode forçar o envio (e.g. inativa)
             log.warn("Illegal state for forcing send for config ID {}: {}", configId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
