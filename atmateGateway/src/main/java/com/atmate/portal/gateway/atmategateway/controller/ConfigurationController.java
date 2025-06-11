@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @Slf4j
-@Validated
 @RestController
 @RequestMapping("/config")
 @Tag(name = "Configurações")
@@ -42,7 +41,7 @@ public class ConfigurationController {
             summary = "Atualizar parâmetros de urgência",
             description = "Endpoint que atualiza os dias de aviso/urgência da página principal"
     )
-    public ResponseEntity<String> setParams(@Valid @RequestBody ParamsDTO paramsDTO) {
+    public ResponseEntity<String> setParams(@RequestBody ParamsDTO paramsDTO) {
         log.info("Received request to set parameters: warningDays={}, urgentDays={}",
                 paramsDTO.getWarningDays(), paramsDTO.getUrgencyDays());
 
