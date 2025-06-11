@@ -17,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/operation-history")
@@ -49,8 +50,8 @@ public class OperationHistoryController {
     public ResponseEntity<Page<OperationHistoryDTO>> getOperationHistory(
             @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) String actionCode,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -59,8 +60,12 @@ public class OperationHistoryController {
         log.info("Fetching operation history with filters: userId={}, actionCode={}, startDate={}, endDate={}, page={}, size={}, sortBy={}, sortDir={}",
                 userId, actionCode, startDate, endDate, page, size, sortBy, sortDir);
 
+        // Converta LocalDate para LocalDateTime se o seu serviço esperar esse tipo
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null; // Para incluir o dia todo
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-        Page<OperationHistoryDTO> history = operationHistoryService.getOperationHistory(userId, actionCode, startDate, endDate, pageable);
+        Page<OperationHistoryDTO> history = operationHistoryService.getOperationHistory(userId, actionCode, startDateTime, endDateTime, pageable);
 
         return ResponseEntity.ok(history);
     }
