@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @RestController
 @RequestMapping("/operation-history")
 @Slf4j
@@ -87,6 +90,31 @@ public class OperationHistoryController {
 
         OperationHistoryDTO createdOperation = operationHistoryService.createOperationHistory(request);
         return ResponseEntity.status(201).body(createdOperation);
+    }
+
+
+    /**
+     * Retrieves a list of unique users who have operations, optionally filtered by date.
+     * This is used to populate the user filter dropdown in the UI.
+     *
+     * @param startDate Optional start date filter.
+     * @param endDate   Optional end date filter.
+     * @return A list of unique users (ID and username).
+     */
+    @GetMapping("/unique-users")
+    @Operation(
+            summary = "Obter utilizadores únicos com operações",
+            description = "Retorna uma lista de utilizadores únicos que têm operações registadas, para popular filtros na UI."
+    )
+    public ResponseEntity<List<UniqueUserDTO>> getUniqueUsers(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        log.info("Fetching unique users with operations between {} and {}", startDate, endDate);
+
+
+        List<UniqueUserDTO> users = operationHistoryService.getUniqueUsersWithOperations();
+        return ResponseEntity.ok(users);
     }
 
 }

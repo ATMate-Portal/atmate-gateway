@@ -2,6 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryDTO;
 import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
+import com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
 import com.atmate.portal.gateway.atmategateway.utils.enums.OperationHistoryActionsEnum;
 
@@ -13,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder; // <<< I
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.OperationHistory;
@@ -126,5 +129,14 @@ public class OperationHistoryService {
                 formattedMessage,
                 savedOperation.getCreatedAt()
         );
+    }
+
+    /**
+     * Finds unique users who have entries in the operation history within a given date range.
+     */
+    public List<UniqueUserDTO> getUniqueUsersWithOperations(){
+        List<UniqueUserDTO> l = new ArrayList<>();
+        l = operationHistoryRepository.findDistinctUsers();
+        return l;
     }
 }

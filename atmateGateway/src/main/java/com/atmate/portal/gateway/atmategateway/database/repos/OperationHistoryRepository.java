@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.repos;
 
+import com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.OperationHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface OperationHistoryRepository extends JpaRepository<OperationHistory, Integer> {
@@ -25,6 +27,13 @@ public interface OperationHistoryRepository extends JpaRepository<OperationHisto
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
+
+
+    @Query("SELECT new com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO(o.user.id, o.user.username) " +
+            "FROM OperationHistory o " +
+            "GROUP BY o.user.id, o.user.username " +
+            "ORDER BY o.user.username ASC")
+    List<UniqueUserDTO> findDistinctUsers();
 
 }
 
