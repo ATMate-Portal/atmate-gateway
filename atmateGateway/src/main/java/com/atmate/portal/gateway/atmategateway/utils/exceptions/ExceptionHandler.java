@@ -1,5 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.utils.exceptions;
 
+import com.atmate.portal.gateway.atmategateway.dto.ErrorResponse;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,9 @@ import java.util.Date;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(ATMateException.class)
-    public ResponseEntity<ErrorResponseDTO> handleATMateException(ATMateException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleATMateException(ATMateException ex, HttpServletRequest request) {
         ErrorEnum error = ex.getErrorEnum();
-        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -27,8 +28,8 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
-        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
