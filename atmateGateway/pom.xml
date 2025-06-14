@@ -8,7 +8,7 @@
         <version>3.3.5</version>
         <relativePath/> </parent>
 
-    <groupId>com.atmate.portal.gateway</groupId>
+    <groupId>com.atmate.gateway</groupId>
     <artifactId>atmate-gateway</artifactId> <version>1.0</version> <name>atmateGateway</name>
     <description>API Gateway for the Atmate Portal</description>
 
