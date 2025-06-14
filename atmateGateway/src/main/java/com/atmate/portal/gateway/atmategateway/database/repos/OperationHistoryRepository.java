@@ -1,6 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.repos;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO;
+import com.atmate.portal.gateway.atmategateway.dto.UniqueUserDTO;
 import com.atmate.portal.gateway.atmategateway.database.entitites.OperationHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +29,7 @@ public interface OperationHistoryRepository extends JpaRepository<OperationHisto
             Pageable pageable);
 
 
-    @Query("SELECT new com.atmate.portal.gateway.atmategateway.database.dto.UniqueUserDTO(o.user.id, o.user.username) " +
+    @Query("SELECT new com.atmate.portal.gateway.atmategateway.dto.UniqueUserDTO(o.user.id, o.user.username) " +
             "FROM OperationHistory o " +
             "GROUP BY o.user.id, o.user.username " +
             "ORDER BY o.user.username ASC")

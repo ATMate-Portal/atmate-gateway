@@ -1,6 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.*;
+import com.atmate.portal.gateway.atmategateway.dto.*;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
 import com.atmate.portal.gateway.atmategateway.database.entitites.TaxType;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
