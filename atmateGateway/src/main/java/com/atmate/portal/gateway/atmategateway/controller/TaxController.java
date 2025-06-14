@@ -2,12 +2,15 @@ package com.atmate.portal.gateway.atmategateway.controller;
 
 import com.atmate.portal.gateway.atmategateway.database.dto.*;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
-import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.entitites.TaxType;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import com.atmate.portal.gateway.atmategateway.database.services.TaxService;
 import com.atmate.portal.gateway.atmategateway.database.services.TaxTypeService;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
+import com.atmate.portal.gateway.atmategateway.dto.TaxResponse;
+import com.atmate.portal.gateway.atmategateway.dto.TaxTypeResponse;
+import com.atmate.portal.gateway.atmategateway.dto.UrgentTaxResponse;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,9 +48,9 @@ public class TaxController {
             summary = "Obter impostos urgentes dos clientes",
             description = "Endpoint que retorna todos os impostos mais urgentes (dependendo dos parâmetros)"
     )
-    public List<UrgentTaxResponseDTO> getUrgentTaxes(@RequestParam Integer days) {
+    public List<UrgentTaxResponse> getUrgentTaxes(@RequestParam Integer days) {
 
-        List<UrgentTaxResponseDTO> urgentTaxResponseDTOList = taxService.getUrgentTaxes(days);
+        List<UrgentTaxResponse> urgentTaxResponseDTOList = taxService.getUrgentTaxes(days);
 
         Optional<Configuration> configuration = configurationService.getConfigurationString(warningDaysVarName);
 
@@ -57,7 +60,7 @@ public class TaxController {
             throw new ATMateException(ErrorEnum.GENERIC_ERROR);
         }
 
-        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+        OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
         operationHistoryRequestDTO.setActionCode("CHECK-001");
         operationHistoryRequestDTO.setContextParameter(String.valueOf(urgentTaxResponseDTOList.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -70,11 +73,11 @@ public class TaxController {
             summary = "Obter impostos dos clientes",
             description = "Endpoint que retorna todos os impostos dos clientes"
     )
-    public List<TaxResponseDTO> getTaxes() {
+    public List<TaxResponse> getTaxes() {
 
-        List<TaxResponseDTO> taxResponseDTOList =  taxService.getTaxes();
+        List<TaxResponse> taxResponseDTOList =  taxService.getTaxes();
 
-        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+        OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
         operationHistoryRequestDTO.setActionCode("CHECK-002");
         operationHistoryRequestDTO.setContextParameter(String.valueOf(taxResponseDTOList.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);

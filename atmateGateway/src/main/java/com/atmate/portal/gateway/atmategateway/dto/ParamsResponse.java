@@ -1,9 +1,9 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.Data;
 
 @Data
-public class ParamsDTO {
+public class ParamsResponse {
     private String warningDays;
     private String urgencyDays;
 }

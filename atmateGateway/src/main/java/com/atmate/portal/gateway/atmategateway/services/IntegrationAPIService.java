@@ -7,11 +7,11 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
-public class IntegrationClient {
+public class IntegrationAPIService {
 
     private final RestTemplate restTemplate;
 
-    public IntegrationClient() {
+    public IntegrationAPIService() {
         this.restTemplate = new RestTemplate();
     }
 

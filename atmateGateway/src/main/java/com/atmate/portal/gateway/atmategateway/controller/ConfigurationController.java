@@ -1,19 +1,17 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.ParamsDTO;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
+import com.atmate.portal.gateway.atmategateway.dto.ParamsResponse;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Configuration;
 import com.atmate.portal.gateway.atmategateway.database.services.ConfigurationService;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -41,46 +39,42 @@ public class ConfigurationController {
             summary = "Atualizar parâmetros de urgência",
             description = "Endpoint que atualiza os dias de aviso/urgência da página principal"
     )
-    public ResponseEntity<String> setParams(@RequestBody ParamsDTO paramsDTO) {
+    public ResponseEntity<String> setParams(@RequestBody ParamsResponse paramsResponse) {
         log.info("Received request to set parameters: warningDays={}, urgentDays={}",
-                paramsDTO.getWarningDays(), paramsDTO.getUrgencyDays());
+                paramsResponse.getWarningDays(), paramsResponse.getUrgencyDays());
 
         try {
             Integer warningDays = null;
             Integer urgentDays = null;
             List<Configuration> configsToUpdate = new ArrayList<>();
 
-            // Parse and validate warningDays if provided
-            if (paramsDTO.getWarningDays() != null && !paramsDTO.getWarningDays().trim().isEmpty()) {
+            if (paramsResponse.getWarningDays() != null && !paramsResponse.getWarningDays().trim().isEmpty()) {
                 try {
-                    warningDays = Integer.parseInt(paramsDTO.getWarningDays());
+                    warningDays = Integer.parseInt(paramsResponse.getWarningDays());
                     if (warningDays <= 0) {
                         log.warn("Invalid warningDays: {} must be positive", warningDays);
                         return ResponseEntity.badRequest().body("Warning days must be positive");
                     }
                 } catch (NumberFormatException e) {
-                    log.warn("Invalid warningDays format: {}", paramsDTO.getWarningDays());
+                    log.warn("Invalid warningDays format: {}", paramsResponse.getWarningDays());
                     return ResponseEntity.badRequest().body("Warning days must be a valid number");
                 }
             }
 
-            // Parse and validate urgentDays if provided
-            if (paramsDTO.getUrgencyDays() != null && !paramsDTO.getUrgencyDays().trim().isEmpty()) {
+            if (paramsResponse.getUrgencyDays() != null && !paramsResponse.getUrgencyDays().trim().isEmpty()) {
                 try {
-                    urgentDays = Integer.parseInt(paramsDTO.getUrgencyDays());
+                    urgentDays = Integer.parseInt(paramsResponse.getUrgencyDays());
                     if (urgentDays <= 0) {
                         log.warn("Invalid urgentDays: {} must be positive", urgentDays);
                         return ResponseEntity.badRequest().body("Urgent days must be positive");
                     }
                 } catch (NumberFormatException e) {
-                    log.warn("Invalid urgentDays format: {}", paramsDTO.getUrgencyDays());
+                    log.warn("Invalid urgentDays format: {}", paramsResponse.getUrgencyDays());
                     return ResponseEntity.badRequest().body("Urgent days must be a valid number");
                 }
             }
 
-            // Enforce urgentDays <= warningDays when both are provided or when one depends on the other
             if (warningDays != null || urgentDays != null) {
-                // Fetch current configurations if needed
                 Optional<Configuration> currentWarningConfig = configurationService.getConfigurationString(warningDaysVarName);
                 Optional<Configuration> currentUrgentConfig = configurationService.getConfigurationString(urgentDaysVarName);
 
@@ -96,7 +90,6 @@ public class ConfigurationController {
                     return ResponseEntity.badRequest().body("Urgent days must be less than or equal to warning days");
                 }
 
-                // Prepare configurations to update
                 if (warningDays != null) {
                     Configuration warningConfig = new Configuration();
                     warningConfig.setVarname(warningDaysVarName);
@@ -116,7 +109,6 @@ public class ConfigurationController {
                 }
             }
 
-            // Save configurations if there are any to update
             if (!configsToUpdate.isEmpty()) {
                 configurationService.saveConfigurations(configsToUpdate);
                 log.info("Successfully updated configurations: warningDays={}, urgentDays={}",
@@ -129,7 +121,7 @@ public class ConfigurationController {
 
             String contextChangedParams = buildContextChangedParams(warningDays, urgentDays);
 
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("CONF-001");
             operationHistoryRequestDTO.setContextParameter(contextChangedParams);
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -142,16 +134,15 @@ public class ConfigurationController {
         }
     }
 
-    // Existing /getParams endpoint (for reference)
     @GetMapping("/getParams")
     @Operation(
             summary = "Obter parâmetros",
             description = "Endpoint que retorna os parâmetros de aviso/urgência da página principal"
     )
-    public ResponseEntity<ParamsDTO> getParams() {
+    public ResponseEntity<ParamsResponse> getParams() {
         log.info("Fetching configuration parameters for warning_days_varname={} and urgent_days_varname={}",
                 warningDaysVarName, urgentDaysVarName);
-        ParamsDTO params = new ParamsDTO();
+        ParamsResponse params = new ParamsResponse();
 
         configurationService.getConfigurationString(warningDaysVarName)
                 .ifPresent(config -> {

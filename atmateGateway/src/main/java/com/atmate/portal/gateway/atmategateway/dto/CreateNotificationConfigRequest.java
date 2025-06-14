@@ -1,4 +1,4 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateNotificationConfigRequestDTO {
+public class CreateNotificationConfigRequest {
 
     List<Integer> clientsIDs; //Ids
     List<Integer> taxTypeIDs; //Ids

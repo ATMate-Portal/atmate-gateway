@@ -2,7 +2,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
 import com.atmate.portal.gateway.atmategateway.database.repos.AtCredentialRepository;
-import com.atmate.portal.gateway.atmategateway.services.CryptoService;
+import com.atmate.portal.gateway.atmategateway.services.EncryptService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class AtCredentialService {
 
     private final AtCredentialRepository atCredentialRepository;
     @Autowired
-    private CryptoService cryptoService;
+    private EncryptService cryptoService;
 
 
     @Autowired

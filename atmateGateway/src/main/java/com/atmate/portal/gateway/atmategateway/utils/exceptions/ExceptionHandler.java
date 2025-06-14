@@ -4,15 +4,14 @@ import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Date;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class ExceptionHandler {
 
-    @ExceptionHandler(ATMateException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(ATMateException.class)
     public ResponseEntity<ErrorResponseDTO> handleATMateException(ATMateException ex, HttpServletRequest request) {
         ErrorEnum error = ex.getErrorEnum();
         ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(Exception.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
         ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
                 .timestamp(new Date())

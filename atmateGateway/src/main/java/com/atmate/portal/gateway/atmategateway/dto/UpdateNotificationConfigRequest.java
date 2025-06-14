@@ -1,4 +1,4 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateNotificationConfigRequestDTO {
+public class UpdateNotificationConfigRequest {
     // Corresponde ao 'notificationTypeId' do frontend
     private Integer notificationTypeId;
 

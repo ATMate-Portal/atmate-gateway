@@ -1,4 +1,4 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.*;
 

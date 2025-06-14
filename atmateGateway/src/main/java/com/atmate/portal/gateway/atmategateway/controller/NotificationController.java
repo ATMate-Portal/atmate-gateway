@@ -1,11 +1,11 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.CreateNotificationConfigRequestDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
+import com.atmate.portal.gateway.atmategateway.dto.CreateNotificationConfigRequest;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
+import com.atmate.portal.gateway.atmategateway.dto.UpdateNotificationConfigRequest;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
-import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
+import com.atmate.portal.gateway.atmategateway.services.IntegrationAPIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @Controller
 @Slf4j
-@CrossOrigin(origins = "*" /*${cors.allowed.origin}"*/) // Corrected line
 @RequestMapping("/notification")
 @Tag(name = "Gestão de notificações")
 public class NotificationController {
@@ -39,7 +38,7 @@ public class NotificationController {
     @Autowired
     OperationHistoryService operationHistoryService;
     @Autowired
-    IntegrationClient integrationClient;
+    IntegrationAPIService integrationAPIService;
 
     @GetMapping("/getNotificationConfig")
     @Operation(
@@ -56,7 +55,7 @@ public class NotificationController {
             }
             log.info("Successfully retrieved {} notification configurations.", configs.size());
 
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("CHECK-006");
             operationHistoryRequestDTO.setContextParameter(String.valueOf(configs.size()));
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -101,7 +100,7 @@ public class NotificationController {
             log.info("Recuperadas com sucesso {} configurações de notificação para os IDs: {}.", configs.size(), ids);
 
             // Atualiza o histórico de operações
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("CHECK-007"); // Talvez um novo código de ação? (Opcional)
             // O parâmetro de contexto pode incluir os IDs pedidos e/ou quantos foram encontrados
             operationHistoryRequestDTO.setContextParameter(String.valueOf(configs.size()));
@@ -127,7 +126,7 @@ public class NotificationController {
             summary = "Criar configurações de notificações.",
             description = "Endpoint que recebe a informação de uma notificação e cria uma configuração."
     )
-    public ResponseEntity createNotificationConfig(@RequestBody CreateNotificationConfigRequestDTO requestBody) {
+    public ResponseEntity createNotificationConfig(@RequestBody CreateNotificationConfigRequest requestBody) {
         try {
             log.info("Attempting to create new notification configuration");
             // Assuming service returns the saved entity with ID populated
@@ -186,7 +185,7 @@ public class NotificationController {
 
             }
 
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("ADD-002");
             operationHistoryRequestDTO.setContextParameter(String.valueOf(clientNotificationConfigSavedList.size()));
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -215,7 +214,7 @@ public class NotificationController {
     )
     public ResponseEntity<ClientNotificationConfig> updateNotificationConfig(
             @PathVariable Integer id,
-            @RequestBody UpdateNotificationConfigRequestDTO updatedConfigDTO) { // <-- USA O NOVO DTO
+            @RequestBody UpdateNotificationConfigRequest updatedConfigDTO) { // <-- USA O NOVO DTO
         try {
             log.info("Attempting to update notification configuration with id: {}", id);
 
@@ -228,7 +227,7 @@ public class NotificationController {
                 ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, updatedConfigDTO);
                 log.info("Successfully updated notification configuration with id: {}", id);
 
-                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
                 operationHistoryRequestDTO.setActionCode("UPD-002");
                 operationHistoryRequestDTO.setContextParameter(String.valueOf(existingConfigOpt.get().getId()));
                 operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -264,7 +263,7 @@ public class NotificationController {
                 ClientNotificationConfig savedConfig = clientNotificationConfigService.updateClientNotificationConfig(id, active);
                 log.info("Successfully updated notification configuration with id: {}", id);
 
-                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
                 operationHistoryRequestDTO.setActionCode("UPD-001");
                 operationHistoryRequestDTO.setContextParameter(String.valueOf(existingConfigOpt.get().getId()));
                 operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -307,7 +306,7 @@ public class NotificationController {
                 log.info("Successfully deleted notification configuration with id: {}", id);
                 // Retorna 204 No Content em caso de sucesso.
 
-                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
                 operationHistoryRequestDTO.setActionCode("DEL-002");
                 operationHistoryRequestDTO.setContextParameter(String.valueOf(id));
                 operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -361,7 +360,7 @@ public class NotificationController {
             //                          .body("A configuração de notificação com ID " + configId + " está inativa e não pode ser enviada manualmente.");
             // }
 
-            int notificationsTriggeredCount = integrationClient.sendNotification(configId);
+            int notificationsTriggeredCount = integrationAPIService.sendNotification(configId);
 
             if (notificationsTriggeredCount == 0) {
                 log.info("No notifications were actively triggered for config ID {} (e.g., no matching clients found or already sent recently).", configId);
@@ -371,7 +370,7 @@ public class NotificationController {
             }
 
             // Passo 3: Registar a operação no histórico
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("FORCE-SEND-001"); // Novo código de ação
             operationHistoryRequestDTO.setContextParameter(String.valueOf(notificationsTriggeredCount));
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);

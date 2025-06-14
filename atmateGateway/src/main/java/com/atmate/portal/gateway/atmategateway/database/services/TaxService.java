@@ -1,7 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.TaxResponseDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.UrgentTaxResponseDTO;
+import com.atmate.portal.gateway.atmategateway.dto.TaxResponse;
+import com.atmate.portal.gateway.atmategateway.dto.UrgentTaxResponse;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.repos.TaxRepository;
@@ -68,9 +68,9 @@ public class TaxService {
         taxRepository.deleteById(id);
     }
 
-    public List<TaxResponseDTO> getTaxes(){
+    public List<TaxResponse> getTaxes(){
 
-        List<TaxResponseDTO> taxList = new ArrayList<>();
+        List<TaxResponse> taxList = new ArrayList<>();
         List<Tax> taxes = taxRepository.findAll();
 
         for (Tax tax : taxes) {
@@ -88,7 +88,7 @@ public class TaxService {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
 
-                TaxResponseDTO taxResponse = new TaxResponseDTO();
+                TaxResponse taxResponse = new TaxResponse();
                 taxResponse.setIdentificadorUnico(identifier);
                 taxResponse.setTipo(tax.getTaxType().getDescription());
                 taxResponse.setDataLimite(tax.getPaymentDeadline());
@@ -108,13 +108,13 @@ public class TaxService {
         return taxList;
     }
 
-    public List<UrgentTaxResponseDTO> getUrgentTaxes(int days) {
+    public List<UrgentTaxResponse> getUrgentTaxes(int days) {
         log.info("getUrgentTaxes() Called");
         LocalDate today = LocalDate.now();
         LocalDate futureDate = today.plusDays(days);
 
         List<Tax> taxes = taxRepository.findUrgentTaxes(today, futureDate);
-        LinkedHashMap<Integer, UrgentTaxResponseDTO> clientTaxesMap = new LinkedHashMap<>();
+        LinkedHashMap<Integer, UrgentTaxResponse> clientTaxesMap = new LinkedHashMap<>();
 
         if(taxes.isEmpty()){
             log.info("getUrgentTaxes() returning empty list");
@@ -140,7 +140,7 @@ public class TaxService {
                 }
 
                 // Criar um objeto do imposto individual
-                UrgentTaxResponseDTO.TaxDetail taxDetail = UrgentTaxResponseDTO.TaxDetail.builder()
+                UrgentTaxResponse.TaxDetail taxDetail = UrgentTaxResponse.TaxDetail.builder()
                         .taxId(tax.getId())
                         .taxData(tax.getTaxData())
                         .type(tax.getTaxType().getDescription())
@@ -152,7 +152,7 @@ public class TaxService {
 
                 // Verificar se o cliente já está no mapa
                 clientTaxesMap.computeIfAbsent(tax.getClient().getId(), clientId ->
-                        UrgentTaxResponseDTO.builder()
+                        UrgentTaxResponse.builder()
                                 .clientId(clientId)
                                 .clientName(tax.getClient().getName())
                                 .nextPaymentDate(tax.getPaymentDeadline())
@@ -166,28 +166,28 @@ public class TaxService {
         }
 
         // Criar lista a partir do mapa de clientes
-        List<UrgentTaxResponseDTO> result = new ArrayList<>(clientTaxesMap.values());
+        List<UrgentTaxResponse> result = new ArrayList<>(clientTaxesMap.values());
 
         // Definir corretamente o nextPaymentDate com base no imposto mais próximo
-        for (UrgentTaxResponseDTO responseDTO : result) {
+        for (UrgentTaxResponse responseDTO : result) {
             responseDTO.setNextPaymentDate(
                     responseDTO.getTaxes().stream()
-                            .map(UrgentTaxResponseDTO.TaxDetail::getPaymentDeadline)
+                            .map(UrgentTaxResponse.TaxDetail::getPaymentDeadline)
                             .min(LocalDate::compareTo)
                             .orElse(null)
             );
         }
 
         // Ordenar impostos dentro de cada cliente por daysLeft
-        for (UrgentTaxResponseDTO responseDTO : result) {
+        for (UrgentTaxResponse responseDTO : result) {
             responseDTO.getTaxes().sort(
-                    Comparator.comparing(UrgentTaxResponseDTO.TaxDetail::getDaysLeft)
+                    Comparator.comparing(UrgentTaxResponse.TaxDetail::getDaysLeft)
             );
         }
 
         // Ordenar clientes por nextPaymentDate e clientName
-        result.sort(Comparator.comparing(UrgentTaxResponseDTO::getNextPaymentDate)
-                .thenComparing(UrgentTaxResponseDTO::getClientName));
+        result.sort(Comparator.comparing(UrgentTaxResponse::getNextPaymentDate)
+                .thenComparing(UrgentTaxResponse::getClientName));
 
         return result;
 

@@ -1,12 +1,18 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.Null;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-public class ClientInfoResponseDTO {
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Null
+public class ClientResponse {
     private Integer id;
     private String name;
     private Integer nif;
@@ -16,9 +22,4 @@ public class ClientInfoResponseDTO {
     private LocalDate birthDate;
     private LocalDateTime lastRefreshDate;
 
-    private List<AddressDTO> addresses;
-    private List<ContactDTO> contacts;
-    private List<TaxResponseDTO> taxes;
-    private List<NotificationClientDTO> notifications;
 }
-

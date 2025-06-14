@@ -1,9 +1,9 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.CreateUserRequest;
-import com.atmate.portal.gateway.atmategateway.database.dto.LoginRequest;
-import com.atmate.portal.gateway.atmategateway.database.dto.LoginResponse;
-import com.atmate.portal.gateway.atmategateway.database.dto.UserDetailsDTO;
+import com.atmate.portal.gateway.atmategateway.dto.CreateUserRequest;
+import com.atmate.portal.gateway.atmategateway.dto.LoginRequest;
+import com.atmate.portal.gateway.atmategateway.dto.LoginResponse;
+import com.atmate.portal.gateway.atmategateway.dto.UserDetailsResponse;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
 import com.atmate.portal.gateway.atmategateway.database.services.UserService;
 import com.atmate.portal.gateway.atmategateway.services.JWTTokenService;
@@ -23,8 +23,8 @@ import jakarta.validation.Valid; // Se usares validação nos DTOs
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth") // Endpoint base para autenticação
-@Tag(name = "Autenticação") // Ver ponto 2
+@RequestMapping("/auth")
+@Tag(name = "Autenticação")
 public class AuthController {
 
     @Autowired
@@ -40,13 +40,11 @@ public class AuthController {
             description = "Endpoint que recebe um email e uma password e faz o login de um utilizador se estes estiverem corretos. É criado um token JWT."
     )
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
-        // 1. Validar o pedido (o @Valid faz isso se tiveres anotações no DTO)
         if (loginRequest.getEmail() == null || loginRequest.getEmail().isEmpty() ||
                 loginRequest.getPassword() == null || loginRequest.getPassword().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email e password são obrigatórios.");
         }
 
-        // 2. Encontrar o utilizador pelo email
         Optional<User> userOptional = userService.findByEmail(loginRequest.getEmail());
         if (userOptional.isEmpty()) {
             // Usar uma mensagem genérica para não revelar se o email existe ou não
@@ -55,18 +53,18 @@ public class AuthController {
 
         User user = userOptional.get();
 
-        // 3. Verificar a password
+        // Verificar a password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas.");
         }
 
-        // 4. Gerar o token JWT
+        // Gerar o token JWT
         String token = jwtTokenProvider.generateToken(user);
 
-        // 5. Preparar os detalhes do utilizador para a resposta
-        UserDetailsDTO userDetails = new UserDetailsDTO( user.getUsername(), user.getEmail());
+        // Preparar os detalhes do utilizador para a resposta
+        UserDetailsResponse userDetails = new UserDetailsResponse(user.getUsername(), user.getEmail());
 
-        // 6. Retornar a resposta com o token e os detalhes do utilizador
+        // Retornar a resposta com o token e os detalhes do utilizador
         LoginResponse loginResponse = new LoginResponse(token, userDetails);
         return ResponseEntity.ok(loginResponse);
     }
@@ -81,16 +79,15 @@ public class AuthController {
         try {
 
             User newUser = new User();
-            newUser.setUsername(registerRequest.username());
-            newUser.setPassword(passwordEncoder.encode(registerRequest.password()));
-            newUser.setEmail(registerRequest.email());
+            newUser.setUsername(registerRequest.getUsername());
+            newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+            newUser.setEmail(registerRequest.getEmail());
 
             newUser = userService.createUser(newUser);
 
-            UserDetailsDTO userDetails = new UserDetailsDTO(newUser.getUsername(), newUser.getEmail());
+            UserDetailsResponse userDetails = new UserDetailsResponse(newUser.getUsername(), newUser.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(userDetails);
         } catch (Exception e) {
-            // Logar o erro e.printStackTrace(); ou com um logger
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro durante o registo.");
         }
     }

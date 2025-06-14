@@ -1,10 +1,10 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.beans;
 
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class AddressDTO {
+public class AddressBean {
     private String street;
     private String doorNumber;
     private String zipCode;

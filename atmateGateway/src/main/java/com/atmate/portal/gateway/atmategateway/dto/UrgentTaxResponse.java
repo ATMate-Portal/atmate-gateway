@@ -1,4 +1,4 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UrgentTaxResponseDTO {
+public class UrgentTaxResponse {
     private Integer clientId;
     private String clientName;
     private LocalDate nextPaymentDate; //data mais proxima de todos os impostos encontrados

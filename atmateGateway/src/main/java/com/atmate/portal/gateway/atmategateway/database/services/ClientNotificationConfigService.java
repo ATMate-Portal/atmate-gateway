@@ -1,6 +1,6 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.UpdateNotificationConfigRequestDTO;
+import com.atmate.portal.gateway.atmategateway.dto.UpdateNotificationConfigRequest;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotificationConfig;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ContactType;
 import com.atmate.portal.gateway.atmategateway.database.entitites.TaxType;
@@ -43,7 +43,7 @@ public class ClientNotificationConfigService {
     // Atualizar uma configuração de notificação do cliente
     // Método de atualização
     @Transactional // Garante que a operação é atômica
-    public ClientNotificationConfig updateClientNotificationConfig(Integer id, UpdateNotificationConfigRequestDTO dto) {
+    public ClientNotificationConfig updateClientNotificationConfig(Integer id, UpdateNotificationConfigRequest dto) {
         // 1. Busca a configuração existente ou lança exceção
         ClientNotificationConfig existingConfig = clientNotificationConfigRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ClientNotificationConfig not found with id: " + id)); // Ou ResourceNotFoundException

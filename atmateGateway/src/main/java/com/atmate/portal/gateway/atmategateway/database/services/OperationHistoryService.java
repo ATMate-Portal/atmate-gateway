@@ -1,7 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryResponse;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
 import com.atmate.portal.gateway.atmategateway.utils.enums.OperationHistoryActionsEnum;
 
@@ -73,14 +73,14 @@ public class OperationHistoryService {
         return 1;
     }
 
-    public Page<OperationHistoryDTO> getOperationHistory(
+    public Page<OperationHistoryResponse> getOperationHistory(
             Integer userId, // Este userId pode ser para filtrar o histórico de um user específico por um admin, por exemplo
             String actionCode,
             LocalDateTime startDate,
             LocalDateTime endDate,
             Pageable pageable) {
         return operationHistoryRepository.findWithFilters(userId, actionCode, startDate, endDate, pageable)
-                .map(operation -> new OperationHistoryDTO(
+                .map(operation -> new OperationHistoryResponse(
                         operation.getId(),
                         operation.getUser() != null ? operation.getUser().getId() : null, // Lidar com user null
                         operation.getUser() != null && operation.getUser().getUsername() != null
@@ -92,7 +92,7 @@ public class OperationHistoryService {
     }
 
     @Transactional // Adicionar @Transactional para operações de escrita
-    public OperationHistoryDTO createOperationHistory(OperationHistoryRequestDTO request) {
+    public OperationHistoryResponse createOperationHistory(OperationHistoryRequest request) {
         // Validar actionCode
         OperationHistoryActionsEnum action = OperationHistoryActionsEnum.fromActionCode(request.getActionCode())
                 .orElseThrow(() -> new IllegalArgumentException("Código de ação inválido: " + request.getActionCode()));
@@ -119,7 +119,7 @@ public class OperationHistoryService {
         OperationHistory savedOperation = operationHistoryRepository.save(operation);
 
         // Retornar DTO
-        return new OperationHistoryDTO(
+        return new OperationHistoryResponse(
                 savedOperation.getId(),
                 savedOperation.getUser() != null ? savedOperation.getUser().getId() : null,
                 userName, // Usar o userName obtido do utilizador autenticado

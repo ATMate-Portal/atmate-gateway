@@ -3,7 +3,11 @@ package com.atmate.portal.gateway.atmategateway.controller;
 import com.atmate.portal.gateway.atmategateway.database.dto.*;
 import com.atmate.portal.gateway.atmategateway.database.entitites.*;
 import com.atmate.portal.gateway.atmategateway.database.services.*;
-import com.atmate.portal.gateway.atmategateway.services.IntegrationClient;
+import com.atmate.portal.gateway.atmategateway.dto.ClientDetailsResponse;
+import com.atmate.portal.gateway.atmategateway.dto.ClientResponse;
+import com.atmate.portal.gateway.atmategateway.dto.CreateClientRequest;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
+import com.atmate.portal.gateway.atmategateway.services.IntegrationAPIService;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +31,7 @@ public class ClientController {
     @Autowired
     AtCredentialService atCredentialService;
     @Autowired
-    IntegrationClient integrationClient;
+    IntegrationAPIService integrationAPIService;
     @Autowired
     AddressService addressService;
     @Autowired
@@ -48,10 +52,10 @@ public class ClientController {
             summary = "Obter todos os clientes",
             description = "Endpoint que retorna todos os clientes e suas informações detalhadas"
     )
-    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
-        List<ClientResponseDTO> clients = clientService.getClients();
+    public ResponseEntity<List<ClientResponse>> getAllClients() {
+        List<ClientResponse> clients = clientService.getClients();
 
-        OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+        OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
         operationHistoryRequestDTO.setActionCode("CHECK-003");
         operationHistoryRequestDTO.setContextParameter(String.valueOf(clients.size()));
         operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -63,8 +67,8 @@ public class ClientController {
             summary = "Obter um cliente",
             description = "Endpoint que retorna um cliente através do seu ID."
     )
-    public ResponseEntity<ClientInfoResponseDTO> getClientById(@PathVariable Integer id) {
-        ClientInfoResponseDTO clientDetails = clientService.getClientDetails(id);
+    public ResponseEntity<ClientDetailsResponse> getClientById(@PathVariable Integer id) {
+        ClientDetailsResponse clientDetails = clientService.getClientDetails(id);
         return ResponseEntity.ok(clientDetails);
     }
 
@@ -73,7 +77,7 @@ public class ClientController {
             summary = "Criar um cliente",
             description = "Endpoint que recebe as credenciais da AT e cria um cliente."
     )
-    public ResponseEntity<Client> createClient(@RequestBody ClientInputCreateDTO input) throws Exception {
+    public ResponseEntity<Client> createClient(@RequestBody CreateClientRequest input) throws Exception {
         String nif = String.valueOf(input.getNif());
 
         //Check NIF
@@ -111,9 +115,9 @@ public class ClientController {
             AtCredential newATCredential = atCredentialService.createAtCredential(atCredential);
 
             if (newATCredential != null) {
-                integrationClient.syncClient(client.getId(), getTypeFromAT);
+                integrationAPIService.syncClient(client.getId(), getTypeFromAT);
 
-                OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+                OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
                 operationHistoryRequestDTO.setActionCode("ADD-001");
                 operationHistoryRequestDTO.setContextParameter(String.valueOf(client.getNif()));
                 operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
@@ -153,7 +157,7 @@ public class ClientController {
 
             clientService.deleteClient(id);
 
-            OperationHistoryRequestDTO operationHistoryRequestDTO = new OperationHistoryRequestDTO();
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
             operationHistoryRequestDTO.setActionCode("DEL-001");
             operationHistoryRequestDTO.setContextParameter(clientOptional.get().getName());
             operationHistoryService.createOperationHistory(operationHistoryRequestDTO);

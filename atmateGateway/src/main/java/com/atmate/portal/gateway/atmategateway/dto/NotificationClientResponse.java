@@ -1,11 +1,11 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.dto;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class NotificationClientDTO {
+public class NotificationClientResponse {
     private int clientId;
     private String notificationType;
     private String taxType;

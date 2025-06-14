@@ -1,11 +1,16 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.*;
+import com.atmate.portal.gateway.atmategateway.beans.AddressBean;
+import com.atmate.portal.gateway.atmategateway.beans.ContactBean;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Address;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Contact;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Tax;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientRepository;
+import com.atmate.portal.gateway.atmategateway.dto.ClientDetailsResponse;
+import com.atmate.portal.gateway.atmategateway.dto.ClientResponse;
+import com.atmate.portal.gateway.atmategateway.dto.NotificationClientResponse;
+import com.atmate.portal.gateway.atmategateway.dto.TaxResponse;
 import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
 import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,8 +81,8 @@ public class ClientService {
         clientRepository.deleteById(id);
     }
 
-    public List<ClientResponseDTO> getClients() {
-        List<ClientResponseDTO> clientList = new ArrayList<>();
+    public List<ClientResponse> getClients() {
+        List<ClientResponse> clientList = new ArrayList<>();
 
         List<Client> clients = clientRepository.findAll();
         
@@ -88,7 +93,7 @@ public class ClientService {
 
         for (Client client : clients) {
 
-            ClientResponseDTO dto = new ClientResponseDTO(
+            ClientResponse dto = new ClientResponse(
                     client.getId(),
                     client.getName(),
                     client.getNif(),
@@ -108,11 +113,11 @@ public class ClientService {
         return clientList;
     }
 
-    public ClientInfoResponseDTO getClientDetails(Integer id) {
+    public ClientDetailsResponse getClientDetails(Integer id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ATMateException(ErrorEnum.CLIENT_NOT_FOUND));
 
-        ClientInfoResponseDTO clientDetails = new ClientInfoResponseDTO();
+        ClientDetailsResponse clientDetails = new ClientDetailsResponse();
         clientDetails.setId(client.getId());
         clientDetails.setName(client.getName());
         clientDetails.setNif(client.getNif());
@@ -124,8 +129,8 @@ public class ClientService {
 
         List<Address> clientAddressess = addressService.getAddressByClient(client);
 
-        List<AddressDTO> addresses = clientAddressess.stream().map(address -> {
-            AddressDTO dto = new AddressDTO();
+        List<AddressBean> addresses = clientAddressess.stream().map(address -> {
+            AddressBean dto = new AddressBean();
             dto.setStreet(address.getStreet());
             dto.setDoorNumber(address.getDoorNumber());
             dto.setZipCode(address.getZipCode());
@@ -142,8 +147,8 @@ public class ClientService {
 
         List<Contact> clientContacts = contactService.getContactsByClient(client);
 
-        List<ContactDTO> contacts = clientContacts.stream().map(contact -> {
-            ContactDTO dto = new ContactDTO();
+        List<ContactBean> contacts = clientContacts.stream().map(contact -> {
+            ContactBean dto = new ContactBean();
             dto.setContactTypeName(contact.getContactType().getDescription()); // Assumindo que ContactType tem "name"
             dto.setContact(contact.getContact());
             dto.setIsDefaultContact(contact.getIsDefaultContact());
@@ -155,10 +160,10 @@ public class ClientService {
 
         List<Tax> clientTaxes = taxService.getTaxesByClient(client);
 
-        List<TaxResponseDTO> taxes = clientTaxes.stream().map(tax -> {
+        List<TaxResponse> taxes = clientTaxes.stream().map(tax -> {
             JsonNode jsonNode = null;
             try {
-                TaxResponseDTO dto = new TaxResponseDTO();
+                TaxResponse dto = new TaxResponse();
                 jsonNode = objectMapper.readTree(tax.getTaxData());
 
                 String identifier = tax.getIdentifier(jsonNode);
@@ -169,7 +174,7 @@ public class ClientService {
                     throw new ATMateException(ErrorEnum.INVALID_JSON_STRUCTURE);
                 }
 
-                TaxResponseDTO taxResponse = new TaxResponseDTO();
+                TaxResponse taxResponse = new TaxResponse();
                 taxResponse.setIdentificadorUnico(identifier);
                 taxResponse.setTipo(tax.getTaxType().getDescription());
                 taxResponse.setDataLimite(tax.getPaymentDeadline());
@@ -186,7 +191,7 @@ public class ClientService {
             
         }).toList();
 
-        List<NotificationClientDTO> notifications = clientNotificationService.getClientNotificationByClientId(client);
+        List<NotificationClientResponse> notifications = clientNotificationService.getClientNotificationByClientId(client);
 
         clientDetails.setAddresses(addresses);
         clientDetails.setContacts(contacts);

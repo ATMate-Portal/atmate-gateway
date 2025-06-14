@@ -1,12 +1,11 @@
 package com.atmate.portal.gateway.atmategateway.controller;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryDTO;
-import com.atmate.portal.gateway.atmategateway.database.dto.OperationHistoryRequestDTO;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryResponse;
+import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,32 +21,18 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/operation-history")
 @Slf4j
-@RequiredArgsConstructor
 @Tag(name = "Histórico de operações")
 public class OperationHistoryController {
 
     @Autowired
     OperationHistoryService operationHistoryService;
 
-    /**
-     * Retrieves the operation history with optional filters and pagination.
-     *
-     * @param userId      Optional user ID filter.
-     * @param actionCode  Optional action code filter (e.g., CHECK-001).
-     * @param startDate   Optional start date filter (inclusive).
-     * @param endDate     Optional end date filter (inclusive).
-     * @param page        Page number (0-based, default 0).
-     * @param size        Page size (default 20).
-     * @param sortBy      Field to sort by (default created_at).
-     * @param sortDir     Sort direction (asc or desc, default desc).
-     * @return A paginated list of operation history entries.
-     */
     @GetMapping
     @Operation(
             summary = "Obter histórico de operações",
             description = "Endpoint que retorna o histórico de operações."
     )
-    public ResponseEntity<Page<OperationHistoryDTO>> getOperationHistory(
+    public ResponseEntity<Page<OperationHistoryResponse>> getOperationHistory(
             @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) String actionCode,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
@@ -65,27 +50,21 @@ public class OperationHistoryController {
         LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null; // Para incluir o dia todo
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-        Page<OperationHistoryDTO> history = operationHistoryService.getOperationHistory(userId, actionCode, startDateTime, endDateTime, pageable);
+        Page<OperationHistoryResponse> history = operationHistoryService.getOperationHistory(userId, actionCode, startDateTime, endDateTime, pageable);
 
         return ResponseEntity.ok(history);
     }
 
-    /**
-     * Inserts a new operation history entry.
-     *
-     * @param request The operation history request containing userId, actionCode, and optional contextParameter.
-     * @return The created operation history entry.
-     */
     @PostMapping
     @Operation(
             summary = "Registar operação no histórico de operações",
             description = "Endpoint que cria um registo no histórico de operações."
     )
-    public ResponseEntity<OperationHistoryDTO> createOperationHistory(@Valid @RequestBody OperationHistoryRequestDTO request) {
+    public ResponseEntity<OperationHistoryResponse> createOperationHistory(@Valid @RequestBody OperationHistoryRequest request) {
         log.info("Creating operation history: userId={}, actionCode={}, contextParameter={}",
                 request.getUserId(), request.getActionCode(), request.getContextParameter());
 
-        OperationHistoryDTO createdOperation = operationHistoryService.createOperationHistory(request);
+        OperationHistoryResponse createdOperation = operationHistoryService.createOperationHistory(request);
         return ResponseEntity.status(201).body(createdOperation);
     }
 

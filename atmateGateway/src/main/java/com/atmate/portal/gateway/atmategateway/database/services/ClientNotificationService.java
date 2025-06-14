@@ -1,11 +1,9 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
-import com.atmate.portal.gateway.atmategateway.database.dto.NotificationClientDTO;
+import com.atmate.portal.gateway.atmategateway.dto.NotificationClientResponse;
 import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.entitites.ClientNotification;
 import com.atmate.portal.gateway.atmategateway.database.repos.ClientNotificationRepository;
-import com.atmate.portal.gateway.atmategateway.utils.enums.ErrorEnum;
-import com.atmate.portal.gateway.atmategateway.utils.exceptions.ATMateException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,11 +38,11 @@ public class ClientNotificationService {
     }
 
     // Ler uma notificação do cliente por ID
-    public List<NotificationClientDTO> getClientNotificationByClientId(Client client) {
+    public List<NotificationClientResponse> getClientNotificationByClientId(Client client) {
         List<ClientNotification> list = clientNotificationRepository.getClientNotificationByClient(client);
-        List<NotificationClientDTO> listOut = new ArrayList<>();
+        List<NotificationClientResponse> listOut = new ArrayList<>();
         for(ClientNotification cn : list){
-            NotificationClientDTO cnDTO = new NotificationClientDTO();
+            NotificationClientResponse cnDTO = new NotificationClientResponse();
             cnDTO.setClientId(cn.getClient().getId());
             cnDTO.setNotificationType(cn.getNotificationType().getDescription());
             cnDTO.setTaxType(cn.getTaxType().getDescription());

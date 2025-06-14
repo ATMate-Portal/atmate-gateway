@@ -1,10 +1,10 @@
-package com.atmate.portal.gateway.atmategateway.database.dto;
+package com.atmate.portal.gateway.atmategateway.beans;
 
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ContactDTO {
+public class ContactBean {
     private String contactTypeName; // nome do tipo de contato (ex: Email, Telemóvel)
     private String contact;
     private Boolean isDefaultContact;
