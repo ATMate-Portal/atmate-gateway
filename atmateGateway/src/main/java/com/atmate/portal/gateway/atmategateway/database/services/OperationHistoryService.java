@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.database.services;
 import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryResponse;
 import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
 import com.atmate.portal.gateway.atmategateway.database.entitites.User;
+import com.atmate.portal.gateway.atmategateway.dto.UniqueUserDTO;
 import com.atmate.portal.gateway.atmategateway.utils.enums.OperationHistoryActionsEnum;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder; // <<< I
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.OperationHistory;
@@ -126,5 +129,14 @@ public class OperationHistoryService {
                 formattedMessage,
                 savedOperation.getCreatedAt()
         );
+    }
+
+    /**
+     * Devolve todos os utilizadores que tenham operações registadas
+     */
+    public List<UniqueUserDTO> getUniqueUsersWithOperations(){
+        List<UniqueUserDTO> l = new ArrayList<>();
+        l = operationHistoryRepository.findDistinctUsers();
+        return l;
     }
 }

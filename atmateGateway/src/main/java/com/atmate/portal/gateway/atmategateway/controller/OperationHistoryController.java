@@ -3,6 +3,7 @@ package com.atmate.portal.gateway.atmategateway.controller;
 import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryResponse;
 import com.atmate.portal.gateway.atmategateway.dto.OperationHistoryRequest;
 import com.atmate.portal.gateway.atmategateway.database.services.OperationHistoryService;
+import com.atmate.portal.gateway.atmategateway.dto.UniqueUserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @RestController
 @RequestMapping("/operation-history")
 @Slf4j
@@ -66,6 +69,24 @@ public class OperationHistoryController {
 
         OperationHistoryResponse createdOperation = operationHistoryService.createOperationHistory(request);
         return ResponseEntity.status(201).body(createdOperation);
+    }
+
+    /**
+     * Devolve uma lista com todos os utilizadores que tenham operações registadas
+     * Usado para popular o select menu no front-end
+     *
+     * @return A list of unique users (ID and username).
+     */
+    @GetMapping("/unique-users")
+    @Operation(
+            summary = "Obter utilizadores únicos com operações",
+            description = "Retorna uma lista de utilizadores únicos que têm operações registadas, para popular filtros na UI."
+    )
+    public ResponseEntity<List<UniqueUserDTO>> getUniqueUsers(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        List<UniqueUserDTO> users = operationHistoryService.getUniqueUsersWithOperations();
+        return ResponseEntity.ok(users);
     }
 
 }
