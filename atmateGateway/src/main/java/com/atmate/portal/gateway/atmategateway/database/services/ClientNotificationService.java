@@ -73,7 +73,7 @@ public class ClientNotificationService {
     @Transactional
     public void deleteClientNotificationByClientId(Integer id) {
         if (!clientNotificationRepository.existsClientNotificationByClientId(id)) {
-            throw new RuntimeException("Notificação do cliente não encontrada com ID: " + id);
+            System.out.println("Notificação do cliente não encontrada com ID: " + id);
         }
         clientNotificationRepository.deleteClientNotificationByClientId(id);
     }
