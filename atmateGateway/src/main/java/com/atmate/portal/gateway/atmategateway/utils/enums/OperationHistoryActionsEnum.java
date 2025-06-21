@@ -68,7 +68,9 @@ public enum OperationHistoryActionsEnum {
 
     FORCE_SEND_NOTIFICATION("FORCE-SEND-001", "Utilizador {0} enviou {1} notificações."),
 
-    FORCE_SCRAPING("SCR-001", "Utilizador {0} forçou a atualização dos dados do cliente {1}"),
+    FORCE_SCRAPING_CLIENT("SCR-001", "Utilizador {0} forçou a atualização dos dados do cliente {1}."),
+
+    FORCE_SCRAPING("SCR-002", "Utilizador {0} forçou a atualização dos dados de todos os clientes."),
 
     /**
      * Modification of configuration deadlines.

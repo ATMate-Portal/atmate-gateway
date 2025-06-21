@@ -25,6 +25,16 @@ public class IntegrationAPIService {
         }
     }
 
+    public void sync() {
+        String url = "http://localhost:8080/atmate-integration/gateway/sync";
+
+        ResponseEntity<Void> response = restTemplate.getForEntity(url, Void.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Erro ao sincronizar todos os clientes");
+        }
+    }
+
     public int sendNotification(Integer configId) {
         String url = "http://localhost:8080/atmate-integration/gateway/sendNotification/" + configId;
         log.info("A chamar o endpoint de envio: {}", url);

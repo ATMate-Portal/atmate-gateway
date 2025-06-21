@@ -156,7 +156,27 @@ public class ClientController {
 
             return new ResponseEntity<>("Pedido de sincronização de cliente efetuado com sucesso.", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Erro ao eliminar o cliente com o ID: " + id + ". " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Erro ao sincronizar o cliente com o ID: " + id + ". " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(
+            summary = "Forçar o scraping de todos os cliente",
+            description = "Endpoint que força o scraping de todos os clientes."
+    )
+    @PostMapping("/force")
+    public ResponseEntity<String> forceAllClientScraping() {
+
+        try {
+            integrationAPIService.sync();
+
+            OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
+            operationHistoryRequestDTO.setActionCode("SCR-001");
+            operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+
+            return new ResponseEntity<>("Pedido de sincronização de todos os clientes efetuado com sucesso.", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Erro ao sincronizar todos os clientes" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
