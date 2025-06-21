@@ -1,6 +1,7 @@
 package com.atmate.portal.gateway.atmategateway.database.services;
 
 import com.atmate.portal.gateway.atmategateway.database.entitites.AtCredential;
+import com.atmate.portal.gateway.atmategateway.database.entitites.Client;
 import com.atmate.portal.gateway.atmategateway.database.repos.AtCredentialRepository;
 import com.atmate.portal.gateway.atmategateway.services.EncryptService;
 import jakarta.transaction.Transactional;
@@ -61,5 +62,11 @@ public class AtCredentialService {
         }
 
         atCredentialRepository.deleteAtCredentialByClientId(id);
+    }
+
+    @Transactional
+    // Deletar uma credencial
+    public AtCredential getATCredentialByClient(Client client) {
+       return atCredentialRepository.getAtCredentialByClient(client);
     }
 }

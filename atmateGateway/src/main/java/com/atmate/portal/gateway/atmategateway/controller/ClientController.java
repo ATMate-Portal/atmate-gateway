@@ -130,6 +130,37 @@ public class ClientController {
     }
 
     @Operation(
+            summary = "Forçar o scraping de um cliente",
+            description = "Endpoint que força o scraping dos dados de um cliente através do seu ID."
+    )
+    @PostMapping("/force/{id}")
+    public ResponseEntity<String> forceClientScraping(@PathVariable Integer id) {
+
+        Optional<Client> clientOptional = clientService.getClientById(id);
+
+        if (clientOptional.isEmpty()) {
+            return new ResponseEntity<>("Cliente não encontrado com o ID: " + id, HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            AtCredential atCredential = atCredentialService.getATCredentialByClient(clientOptional.get());
+
+            if (atCredential != null) {
+                integrationAPIService.syncClient(clientOptional.get().getId(), false);
+
+                OperationHistoryRequest operationHistoryRequestDTO = new OperationHistoryRequest();
+                operationHistoryRequestDTO.setActionCode("SCR-001");
+                operationHistoryRequestDTO.setContextParameter(String.valueOf(clientOptional.get().getName()));
+                operationHistoryService.createOperationHistory(operationHistoryRequestDTO);
+            }
+
+            return new ResponseEntity<>("Pedido de sincronização de cliente efetuado com sucesso.", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Erro ao eliminar o cliente com o ID: " + id + ". " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(
             summary = "Eliminar um cliente",
             description = "Endpoint que elimina um cliente através do seu ID."
     )
