@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class NotificationClientResponse {
-    private int clientId;
+    private String clientId;
     private String notificationType;
     private String taxType;
     private String status;

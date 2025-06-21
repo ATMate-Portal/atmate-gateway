@@ -43,7 +43,7 @@ public class ClientNotificationService {
         List<NotificationClientResponse> listOut = new ArrayList<>();
         for(ClientNotification cn : list){
             NotificationClientResponse cnDTO = new NotificationClientResponse();
-            cnDTO.setClientId(cn.getClient().getId());
+            cnDTO.setClientId(cn.getClient().getName());
             cnDTO.setNotificationType(cn.getNotificationType().getDescription());
             cnDTO.setTaxType(cn.getTaxType().getDescription());
             cnDTO.setStatus(cn.getStatus());
