@@ -1,4 +1,4 @@
-# 🚪 ATMate Gateway Service
+# 🚪 ATMate Gateway
 
 
 
