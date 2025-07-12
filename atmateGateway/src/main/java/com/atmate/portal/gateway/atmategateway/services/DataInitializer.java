@@ -64,8 +64,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void checkAndGenerateSecretKey(){
-        String keyFile = System.getenv("KEY_NAME_v2").concat("/");
-        String keyPath = System.getenv("KEY_PATH_v2");
+        String keyFile = System.getenv("KEY_NAME").concat("/");
+        String keyPath = System.getenv("KEY_PATH");
 
         if (keyPath == null || keyFile == null) {
             log.error(">>> ERRO: As variáveis de ambiente KEY_PATH e/ou KEY_NAME não estão definidas. A geração da chave foi ignorada.");
